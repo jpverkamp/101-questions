@@ -1,70 +1,55 @@
+import random
+import re
+import requests
 
-def init(app):
+ROOT = 'http://localhost:5000'
+API_ROOT = 'http://localhost:5000/api/v1'
 
-    app.checkPermissions = False
+def randomString(length, mode = 'upper'):
+    new_str = ''.join([
+        random.choice('BCDFGHJKLMNPQRSTVWXYZ' if i % 2 == 0 else 'AEIOU')
+        for i in range(length)
+    ])
 
-    import model.user
+    if mode == 'upper':
+        return new_str
+    elif mode == 'lower':
+        return new_str.lower()
+    elif mode == 'title':
+        return new_str[0].upper() + new_str[1:].lower()
 
-    test_user = model.user.byEmail(app, 'me@jverkamp.com')
-    if not test_user:
-        test_user = model.user.User(
-            app,
-            name = 'JP Verkamp',
-            email = 'me@jverkamp.com',
-        )
+# Create a new account
+name = randomString(6, mode = 'title') + ' ' + randomString(6, mode = 'title')
+email = name.split()[0].lower() + '@example.com'
+password = randomString(8)
 
-    test_user.setPassword('password')
-    print('test user: {0}'.format(test_user.id))
+r = requests.post(API_ROOT + '/user', {'name': name, 'email': email, 'password': password})
+assert r.json(), 'account created successfully'
+user_id = r.json()
+assert re.match('[0-9a-fA-F]{13}', user_id), 'user id is correctly formatted'
 
-    import model.questionset
+# Test logins
+r = requests.post(ROOT + '/login', {'email': email, 'password': 'invalid'})
+assert r.status_code == 400, 'login with invalid password'
 
-    if False:
-        test_qs = model.questionset.QuestionSet(
-            app,
-            title = 'Hello',
-            questions = [
-                'World?',
-                'Kitty?',
-                'Goodbye?',
-            ]
-        )
+r = requests.post(ROOT + '/login', {'email': email})
+assert r.status_code == 400, 'login with no password'
 
-        print('test questionset: {0}'.format(test_qs.id))
-        test_user.setPermission(test_qs, 'read')
+session = requests.Session()
+r = session.post(ROOT + '/login', {'email': email, 'password': password})
+assert r.status_code == 200, 'login with correct password'
 
-    print('-----')
+# Try to get my own user information
+# Have to be logged in for this, ergo the use of session
+r = session.get(API_ROOT + '/user/me')
+assert r.json()['name'] == name, '/user/me correctly stored name'
+assert r.json()['email'] == email, '/user/me correctly stored email'
+assert not 'password' in r.json(), '/user/medid not return password'
 
-    print('all things')
-    print(list(test_user.getResources()))
+# Try to get my information by user id
+r = session.get(API_ROOT + '/user/{0}'.format(user_id))
+assert r.json()['name'] == name, '/user/<id> correctly stored name'
+assert r.json()['email'] == email, '/user/<id> correctly stored email'
+assert not 'password' in r.json(), '/user/<id> did not return password'
 
-    print('all questionsets')
-    print(list(test_user.getResources('QuestionSet')))
-
-    print('all things with <= write permission')
-    print(list(test_user.getResources(permission = 'write')))
-
-    print('all questionsets, ids only')
-    print(list(test_user.getResources('QuestionSet', id_only = True)))
-
-    app.checkPermissions = True
-
-if __name__ == '__main__':
-
-    import requests
-    s = requests.Session()
-
-    ROOT = 'http://localhost:5000/api/v1'
-
-    r = s.post(ROOT + '/user/login', {
-        'email': 'me@jverkamp.com',
-        'password': 'password'
-    })
-    print(dict(r.cookies))
-
-    print(s.get(ROOT + '/user/me').text)
-    print(s.get(ROOT + '/user/619f47f32a036').text)
-
-    qs_ids = s.get(ROOT + '/questionsets')
-    print(qs_ids.text)
-    for qs_id in qs_ids.json():
-        print(s.get(ROOT + '/questionset/' + qs_id).text)
+print('All tests passed successfully!')
