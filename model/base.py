@@ -12,7 +12,6 @@ class BaseModel(object):
 
     def __init__(self, app, id, template, auth, **kwargs):
         self.app = app
-        self.template = template
         self.auth = auth
 
         if id == None:
@@ -29,17 +28,21 @@ class BaseModel(object):
             resource_id = self.id
         )
 
+        new_data = False
+
         data = self.app.redis.get(self.key)
         if data:
             self.data = json.loads(data.decode())
         else:
-            self.data = {}
+            self.data = copy.deepcopy(template)
+            new_data = True
 
         for k, v in kwargs.items():
             self.data[k] = v
+            new_data = True
 
         # If we updated any data, write it out now
-        if kwargs:
+        if new_data:
             data = json.dumps(self.data)
             self.app.redis.set(self.key, data)
 
@@ -49,7 +52,7 @@ class BaseModel(object):
         if self.app.checkPermissions and self.auth:
             import model.user
             if not model.user.current(self.app).hasPermission(self, 'read'):
-                return
+                return None
 
         if key in self.data:
             return self.data[key]
