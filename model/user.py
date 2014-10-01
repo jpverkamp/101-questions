@@ -23,11 +23,11 @@ class User(model.base.BaseModel):
 
         # Special updates on new users
         if id == None:
-            # Store the email to id mapping
-            app.redis.hset('email->user_id', self['email'], self.id)
-
             # Create self-admin permissions for each user
             self.setPermission(self, 'admin')
+
+            # Store the email to id mapping
+            app.redis.hset('email->user_id', self.data['email'], self.id)
 
     def __setitem__(self, key, val):
 
@@ -59,7 +59,7 @@ class User(model.base.BaseModel):
         if not self.app.checkPermissions or not other.auth:
             return True
 
-        permission = redis.hget(
+        permission = self.app.redis.hget(
             'permission:{user_id}:'.format(user_id = self.id),
             '{resource_type}:{resource_id}'.format(
                 resource_type = other.__class__.__name__,
