@@ -137,7 +137,9 @@ def current(app):
     except:
         pass
 
-
-    return User(app, flask.session['user_id'])
+    try:
+        return User(app, flask.session['user_id'])
+    except:
+        pass
 
     return None
