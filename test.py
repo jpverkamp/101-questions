@@ -75,18 +75,25 @@ r = requests.post(API_ROOT + '/questionset', {
 })
 assert r.status_code == 400, 'questionset without signing in'
 
-qs_ids = []
+qss = {}
 for i in range(3):
-    r = session.post(API_ROOT + '/questionset', {
+    qs = {
         'title': randomTitle(),
         'questions': '\n'.join(randomQuestions(10))
-    })
+    }
+    r = session.post(API_ROOT + '/questionset', qs)
     assert r.status_code == 200, 'questionset created'
-    qs_ids.append(r.json())
-
-print qs_ids
+    qss[r.json()] = qs
 
 # Test reading all question sets for a user
+r = session.get(API_ROOT + '/questionsets')
+assert set(qss.keys()) == set(r.json()), 'questionsets are readable'
+
+# Test reading a specific questionset
+qs_id = random.choice(qss.keys())
+r = session.get(API_ROOT + '/questionset/{0}'.format(qs_id))
+assert qss[qs_id]['title'] == r.json()['title'], 'questionset read back'
+assert qss[qs_id]['questions'].split('\n') == r.json()['questions'], 'questionset read back'
 
 
 print('All tests passed successfully!')
