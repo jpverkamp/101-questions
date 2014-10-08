@@ -59,13 +59,18 @@ class User(model.base.BaseModel):
         if not self.app.checkPermissions or not other.auth:
             return True
 
+        if self == other:
+            return True
+
         permission = self.app.redis.hget(
-            'permission:{user_id}:'.format(user_id = self.id),
+            'permission:{user_id}'.format(user_id = self.id),
             '{resource_type}:{resource_id}'.format(
                 resource_type = other.__class__.__name__,
                 resource_id = other.id
             )
         )
+        if permission:
+            permission = permission.decode()
 
         return ((mode == 'read' and permission in ('read', 'write', 'admin'))
                 or (mode == 'write' and permission in ('write', 'admin'))
