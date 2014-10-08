@@ -67,10 +67,10 @@ assert not 'password' in r.json(), '/user/<id> did not return password'
 
 # Make sure I cannot get other user's information
 r = session.get(API_ROOT + '/user/1234567890')
-assert not r.json(), "cannot read information about non-existant user"
+assert r.status_code == 400, "cannot read information about non-existant user"
 
 r = session.get(API_ROOT + '/user/{0}'.format(other_user_id))
-assert not r.json(), "cannot read information about unrelated user"
+assert r.status_code == 400, "cannot read information about unrelated user"
 
 # Test creating questionsets
 def randomTitle():
@@ -107,20 +107,23 @@ r = session.get(API_ROOT + '/questionsets')
 assert set(qss.keys()) == set(r.json()), 'questionsets are readable'
 
 # Test reading a specific questionset
-qs_id = random.choice(qss.keys())
+qs_id = random.choice(list(qss.keys()))
 r = session.get(API_ROOT + '/questionset/{0}'.format(qs_id))
 assert qss[qs_id]['title'] == r.json()['title'], 'questionset read back'
 assert qss[qs_id]['questions'].split('\n') == r.json()['questions'], 'questionset read back'
 
 r = other_session.get(API_ROOT + '/questionset/1234567890')
-assert not r.json(), 'cannot read invalid questionset id'
+assert r.status_code == 400, 'cannot read invalid questionset id'
 
 r = other_session.get(API_ROOT + '/questionset/{0}'.format(qs_id))
-assert not r.json(), 'other users cannot read my questionset'
+assert r.status_code == 400, 'other users cannot read my questionset'
 
 # Test updating a questionset
 r = session.put(API_ROOT + '/questionset/{0}'.format(qs_id), {'title': qss[qs_id]['title'] + '(edited)'})
 assert 'edited' in r.json()['title'], 'can edit questionset'
+
+r = other_session.put(API_ROOT + '/questionset/{0}'.format(qs_id), {'title': qss[qs_id]['title'] + '(edited)'})
+assert r.status_code == 400, 'others cannot edit questions'
 
 r = session.get(API_ROOT + '/questionset/{0}'.format(qs_id))
 assert 'edited' in r.json()['title'], 'can read newly edited questionset'

@@ -2,8 +2,42 @@
 
 import copy
 import flask
+import functools
 import json
 import random
+
+def check_permission(which, self = None):
+    '''Check permission for this object'''
+
+    # Do the actual permission check against a given object
+    # Bail out on the connection completely if the check fails
+    def check(obj):
+        if obj.app.checkPermissions and obj.auth:
+
+            import model.user
+
+            with obj.app.unsafe(): # Don't check permissions in permission check
+                current_user = model.user.current(obj.app)
+
+            if not (current_user and current_user.hasPermission(obj, which)):
+                flask.abort(400)
+
+    # If self is passed, we are not a decorator, check directly
+    if self:
+        check(self)
+
+    # Otherwise, we're being called as a decorator
+    else:
+        def wrapper(f):
+
+            @functools.wraps(f)
+            def new_f(self, *args, **kwargs):
+                check(self)
+                return f(self, *args, **kwargs)
+
+            return new_f
+
+        return wrapper
 
 class BaseModel(object):
     '''Base model for redis backed objects, override this.'''
@@ -27,11 +61,12 @@ class BaseModel(object):
             name = self.__class__.__name__,
             resource_id = self.id
         )
+        data = self.app.redis.get(self.key)
 
         new_data = False
 
-        data = self.app.redis.get(self.key)
         if data:
+            check_permission('read', self)
             self.data = json.loads(data.decode())
         elif not id:
             self.data = copy.deepcopy(template)
@@ -48,39 +83,26 @@ class BaseModel(object):
             data = json.dumps(self.data)
             self.app.redis.set(self.key, data)
 
+    @check_permission('read')
     def __getitem__(self, key):
         '''Load a value from redis, caching in local memory for multiple reads.'''
-
-        if self.app.checkPermissions and self.auth:
-            import model.user
-            if not model.user.current(self.app).hasPermission(self, 'read'):
-                return None
 
         if key in self.data:
             return self.data[key]
         else:
             return None
 
+    @check_permission('write')
     def __setitem__(self, key, val):
         '''Save a value, automatically push to redis.'''
-
-        if self.app.checkPermissions and self.auth:
-            import model.user
-            if not model.user.current(self.app).hasPermission(self, 'write'):
-                return
 
         self.data[key] = val
         data = json.dumps(self.data)
         self.app.redis.set(self.key, data)
 
+    @check_permission('read')
     def __iter__(self):
         '''Allow iteration over objects and direct conversion with dict(...)'''
-
-        if self.app.checkPermissions and self.auth:
-            import model.user
-            print('checking permission on {0} with user {1}, permission is {2}'.format(self, model.user.current(self.app), model.user.current(self.app).hasPermission(self, 'read')))
-            if not model.user.current(self.app).hasPermission(self, 'read'):
-                return
 
         for key in self.data:
             yield key, self.data[key]

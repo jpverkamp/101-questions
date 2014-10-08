@@ -34,7 +34,7 @@ def register(app):
             try:
                 id = model.user.current(app).id
             except:
-                return json.dumps({})
+                flask.abort(400)
 
         user = model.user.User(app, id)
         user_data = dict(user)
