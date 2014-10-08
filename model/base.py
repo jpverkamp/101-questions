@@ -33,9 +33,11 @@ class BaseModel(object):
         data = self.app.redis.get(self.key)
         if data:
             self.data = json.loads(data.decode())
-        else:
+        elif not id:
             self.data = copy.deepcopy(template)
             new_data = True
+        else:
+            self.data = {}
 
         for k, v in kwargs.items():
             self.data[k] = v

@@ -112,5 +112,17 @@ r = session.get(API_ROOT + '/questionset/{0}'.format(qs_id))
 assert qss[qs_id]['title'] == r.json()['title'], 'questionset read back'
 assert qss[qs_id]['questions'].split('\n') == r.json()['questions'], 'questionset read back'
 
+r = other_session.get(API_ROOT + '/questionset/1234567890')
+assert not r.json(), 'cannot read invalid questionset id'
+
+r = other_session.get(API_ROOT + '/questionset/{0}'.format(qs_id))
+assert not r.json(), 'other users cannot read my questionset'
+
+# Test updating a questionset
+r = session.put(API_ROOT + '/questionset/{0}'.format(qs_id), {'title': qss[qs_id]['title'] + '(edited)'})
+assert 'edited' in r.json()['title'], 'can edit questionset'
+
+r = session.get(API_ROOT + '/questionset/{0}'.format(qs_id))
+assert 'edited' in r.json()['title'], 'can read newly edited questionset'
 
 print('All tests passed successfully!')
