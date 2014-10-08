@@ -22,7 +22,7 @@ class User(model.base.BaseModel):
         )
 
         # Special updates on new users
-        if id == None:
+        if id == None and kwargs:
             # Create self-admin permissions for each user
             self.setPermission(self, 'admin')
 

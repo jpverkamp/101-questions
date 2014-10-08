@@ -57,6 +57,6 @@ def register(app):
 
             if user and user.verifyPassword(password):
                 flask.session['user_id'] = user.id
-                return user_me()
+                return get_user('me')
 
             flask.abort(400)

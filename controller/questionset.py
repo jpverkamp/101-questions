@@ -43,6 +43,21 @@ def register(app):
 
         qs = model.questionset.QuestionSet(app, id)
         if qs:
-            return json.dumps(qs.data)
+            return json.dumps(dict(qs))
         else:
             return json.dumps({})
+
+    @app.route('/api/v1/questionset/<id>', methods = ["PUT"])
+    def update_questionset(id):
+
+        qs = model.questionset.QuestionSet(app, id)
+        if not qs:
+            flask.abort(400)
+
+        if 'title' in flask.request.form:
+            qs['title'] = flask.request.form['title']
+
+        if 'questions' in flask.request.form:
+            qs['questions'] = flask.request.form['questions'].split('\n')
+
+        return json.dumps(dict(qs))
