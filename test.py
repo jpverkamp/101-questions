@@ -22,14 +22,20 @@ def randomString(length = None, mode = 'upper'):
         return new_str[0].upper() + new_str[1:].lower()
 
 # Create a new account
-name = randomString(6, mode = 'title') + ' ' + randomString(6, mode = 'title')
-email = name.split()[0].lower() + '@example.com'
-password = randomString(8)
+def create_user():
+    name = randomString(6, mode = 'title') + ' ' + randomString(6, mode = 'title')
+    email = name.split()[0].lower() + '@example.com'
+    password = randomString(8)
 
-r = requests.post(API_ROOT + '/user', {'name': name, 'email': email, 'password': password})
-assert r.json(), 'account created successfully'
-user_id = r.json()
-assert re.match('[0-9a-fA-F]{13}', user_id), 'user id is correctly formatted'
+    r = requests.post(API_ROOT + '/user', {'name': name, 'email': email, 'password': password})
+    assert r.json(), 'account created successfully'
+    user_id = r.json()
+    assert re.match('[0-9a-fA-F]{13}', user_id), 'user id is correctly formatted'
+
+    return name, email, password, user_id
+
+name, email, password, user_id = create_user()
+other_name, other_email, other_password, other_user_id = create_user()
 
 # Test logins
 r = requests.post(ROOT + '/login', {'email': email, 'password': 'invalid'})
@@ -41,6 +47,10 @@ assert r.status_code == 400, 'login with no password'
 session = requests.Session()
 r = session.post(ROOT + '/login', {'email': email, 'password': password})
 assert r.status_code == 200, 'login with correct password'
+
+other_session = requests.Session()
+r = other_session.post(ROOT + '/login', {'email': other_email, 'password': other_password})
+assert r.status_code == 200, 'second login with correct password'
 
 # Try to get my own user information
 # Have to be logged in for this, ergo the use of session
@@ -54,6 +64,13 @@ r = session.get(API_ROOT + '/user/{0}'.format(user_id))
 assert r.json()['name'] == name, '/user/<id> correctly stored name'
 assert r.json()['email'] == email, '/user/<id> correctly stored email'
 assert not 'password' in r.json(), '/user/<id> did not return password'
+
+# Make sure I cannot get other user's information
+r = session.get(API_ROOT + '/user/1234567890')
+assert not r.json(), "cannot read information about non-existant user"
+
+r = session.get(API_ROOT + '/user/{0}'.format(other_user_id))
+assert not r.json(), "cannot read information about unrelated user"
 
 # Test creating questionsets
 def randomTitle():
