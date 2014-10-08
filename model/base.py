@@ -70,3 +70,26 @@ class BaseModel(object):
         self.data[key] = val
         data = json.dumps(self.data)
         self.app.redis.set(self.key, data)
+
+    def __iter__(self):
+        '''Allow iteration over objects and direct conversion with dict(...)'''
+
+        if self.app.checkPermissions and self.auth:
+            import model.user
+            print('checking permission on {0} with user {1}, permission is {2}'.format(self, model.user.current(self.app), model.user.current(self.app).hasPermission(self, 'read')))
+            if not model.user.current(self.app).hasPermission(self, 'read'):
+                return
+
+        for key in self.data:
+            yield key, self.data[key]
+
+    def __str__(self):
+        '''Simple string representation'''
+
+        return '{0}:{1}'.format(self.__class__.__name__, self.id)
+
+    def __repr__(self):
+        '''More detailed string representation'''
+
+        with self.app.unsafe():
+            return '{0}:{1}={2}'.format(self.__class__.__name__, self.id, dict(self))

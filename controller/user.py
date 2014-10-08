@@ -28,24 +28,20 @@ def register(app):
         else:
             flask.abort(400)
 
-    @app.route('/api/v1/user/me', methods = ["GET"])
-    def user_me():
-        '''Return information about the current user'''
-
-        try:
-            return user(model.user.current(app).id)
-        except:
-            return json.dumps({})
-
-
     @app.route('/api/v1/user/<id>', methods = ["GET"])
-    def user(id):
-        user = model.user.User(app, id)
+    def get_user(id):
+        if id == 'me':
+            try:
+                id = model.user.current(app).id
+            except:
+                return json.dumps({})
 
-        if user and user.data:
-            user = user.data
-            del user['password']
-            return json.dumps(user)
+        user = model.user.User(app, id)
+        user_data = dict(user)
+
+        if user_data:
+            del user_data['password']
+            return json.dumps(user_data)
         else:
             return json.dumps({})
 
