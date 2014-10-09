@@ -4,6 +4,7 @@ import flask
 import json
 
 import model.campaign
+import model.questionset
 import model.user
 
 def register(app):
@@ -53,3 +54,36 @@ def register(app):
             return json.dumps(dict(c))
         else:
             return json.dumps({})
+
+    @app.route('/api/v1/campaign/<id>', methods = ["PUT"])
+    def update_campaign(id):
+
+        c = model.campaign.Campaign(app, id)
+
+        for basic_field in ['title', 'start_date', 'frequency']:
+            if basic_field in flask.request.form:
+                c[basic_field] = flask.request.form[basic_field]
+
+        if 'questions' in flask.request.form:
+            try:
+
+                questions = []
+                for line in flask.request.form['questions'].split('\n'):
+                    qs_id, q_num = line.split('.')
+
+                    # Validate that the question set exists and is readable
+                    qs = model.questionset.QuestionSet(app, qs_id)
+
+                    # Validate the the question exists in the questionset
+                    q_num = int(q_num)
+                    if q_num < 0 or q_num >= len(qs['questions']):
+                        flask.abort(400)
+
+                    questions.append([qs_id, q_num])
+
+                c['questions'] = questions
+
+            except:
+                flask.abort(400)
+
+        return json.dumps(dict(c))

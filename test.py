@@ -131,9 +131,9 @@ assert 'edited' in r.json()['title'], 'can read newly edited questionset'
 
 # Test creating a new campaign
 today = datetime.datetime.today().date().strftime('%Y-%m-%d')
-data = {'title': randomTitle(), 'start_date': today, 'frequency': 1}
+c_data = {'title': randomTitle(), 'start_date': today, 'frequency': 1}
 
-r = session.post(API_ROOT + '/campaign', data)
+r = session.post(API_ROOT + '/campaign', c_data)
 assert r.status_code == 200, 'create a new campaign'
 c_id = r.json()
 
@@ -143,9 +143,40 @@ assert r.json() == [c_id], 'can read my campaigns'
 
 r = session.get(API_ROOT + '/campaign/{0}'.format(c_id))
 assert r.status_code == 200, 'read my own new campaign'
-assert r.json()['title'] == data['title'], 'verify campaign title was saved'
+assert r.json()['title'] == c_data['title'], 'verify campaign title was saved'
 
 r = other_session.get(API_ROOT + '/campaign/{0}'.format(c_id))
 assert r.status_code == 400, 'others cannot see my campaign'
+
+# Try changing basic fields on a campaign
+r = session.put(API_ROOT + '/campaign/{0}'.format(c_id), {'title': c_data['title'] + ' (edited)'})
+assert r.status_code == 200, 'edit my own campaign'
+assert 'edited' in r.json()['title'], 'verify campaign title was edited'
+
+r = session.get(API_ROOT + '/campaign/{0}'.format(c_id))
+assert 'edited' in r.json()['title'], 'verify campaign title was edited on read'
+
+r = other_session.put(API_ROOT + '/campaign/{0}'.format(c_id), {'title': c_data['title'] + ' (edited)'})
+assert r.status_code == 400, 'others cannot edit my campaign'
+
+# Try changing campaign questions
+new_qs = []
+for qs_id, qs in qss.items():
+    for i in range(len(qs['questions'].split('\n'))):
+        new_qs.append([qs_id, i])
+random.shuffle(new_qs)
+new_qs_str = '\n'.join(['{0}.{1}'.format(*each) for each in new_qs])
+
+r = session.put(API_ROOT + '/campaign/{0}'.format(c_id), {'questions': new_qs_str})
+assert r.status_code == 200, 'can edit questions'
+
+r = session.get(API_ROOT + '/campaign/{0}'.format(c_id))
+assert r.json()['questions'] == new_qs, 'questions saved correctly to campaign'
+
+r = session.put(API_ROOT + '/campaign/{0}'.format(c_id), {'questions': '1234567890.0'})
+assert r.status_code == 400, 'cannot add questions from invalid questionset'
+
+r = session.put(API_ROOT + '/campaign/{0}'.format(c_id), {'questions': 'error.error'})
+assert r.status_code == 400, 'cannot add inproperly formatted questions'
 
 print('All tests passed successfully!')
