@@ -33,11 +33,14 @@ app.redis = redis.StrictRedis(
     port = app.cfg.getint('redis', 'port')
 )
 
-import controller.user
-controller.user.register(app)
+import controller.campaign
+controller.campaign.register(app)
 
 import controller.questionset
 controller.questionset.register(app)
+
+import controller.user
+controller.user.register(app)
 
 if __name__ == '__main__':
     app.secret_key = app.cfg.get('global', 'secret')

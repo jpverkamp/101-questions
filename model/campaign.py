@@ -11,7 +11,7 @@ class Campaign(model.base.BaseModel):
             id,
             {
                 'title': None,
-                'start-date': None,
+                'start_date': None,
                 'frequency': None,
                 'users': [],
                 'questions': [],

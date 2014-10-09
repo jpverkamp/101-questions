@@ -1,3 +1,4 @@
+import datetime
 import random
 import re
 import requests
@@ -127,5 +128,24 @@ assert r.status_code == 400, 'others cannot edit questions'
 
 r = session.get(API_ROOT + '/questionset/{0}'.format(qs_id))
 assert 'edited' in r.json()['title'], 'can read newly edited questionset'
+
+# Test creating a new campaign
+today = datetime.datetime.today().date().strftime('%Y-%m-%d')
+data = {'title': randomTitle(), 'start_date': today, 'frequency': 1}
+
+r = session.post(API_ROOT + '/campaign', data)
+assert r.status_code == 200, 'create a new campaign'
+c_id = r.json()
+
+# Test reading campaigns
+r = session.get(API_ROOT + '/campaigns')
+assert r.json() == [c_id], 'can read my campaigns'
+
+r = session.get(API_ROOT + '/campaign/{0}'.format(c_id))
+assert r.status_code == 200, 'read my own new campaign'
+assert r.json()['title'] == data['title'], 'verify campaign title was saved'
+
+r = other_session.get(API_ROOT + '/campaign/{0}'.format(c_id))
+assert r.status_code == 400, 'others cannot see my campaign'
 
 print('All tests passed successfully!')
