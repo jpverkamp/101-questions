@@ -33,26 +33,18 @@ def register(app):
     def all_questionsets():
 
         user = model.user.current(app)
-        if user:
-            return json.dumps(list(user.getResources(type = 'QuestionSet', id_only = True)))
-        else:
-            return json.dumps([])
+        return json.dumps(list(user.getResources(type = 'QuestionSet', id_only = True)))
 
     @app.route('/api/v1/questionset/<id>', methods = ["GET"])
     def get_questionset(id):
 
         qs = model.questionset.QuestionSet(app, id)
-        if qs:
-            return json.dumps(dict(qs))
-        else:
-            return json.dumps({})
+        return json.dumps(dict(qs))
 
     @app.route('/api/v1/questionset/<id>', methods = ["PUT"])
     def update_questionset(id):
 
         qs = model.questionset.QuestionSet(app, id)
-        if not qs:
-            flask.abort(400)
 
         if 'title' in flask.request.form:
             qs['title'] = flask.request.form['title']
