@@ -1,55 +1,68 @@
-# -*- coding: utf-8 -*-
-
 import flask
 import json
 
-import model.questionset
-import model.user
+from model.QuestionSet import QuestionSet
 
-def register(app):
+def init(app):
 
-    @app.route('/api/v1/questionset', methods = ["POST"])
-    def create_questionset():
+    SINGULAR_FIELDS = ['title', 'frequency']
+    PLURAL_FIELDS = ['email', 'question']
 
-        title = flask.request.form['title']
-        questions = flask.request.form['questions']
+    @app.route('/questionset', methods = ['post'])
+    def createQuestionSet():
+        return json.dumps(QuestionSet(
+            id = None,
+            title = flask.request.form['title'],
+            frequency = flask.request.form['frequency'],
+            emails = [flask.request.form['email']],
+            questions = []
+        ))
 
-        user = model.user.current(app)
-        if not user:
-            flask.abort(400)
+    @app.route('/questionset/<id>', methods = ['get'])
+    def getQuestionSet(id):
+        return json.dumps(QuestionSet(id))
 
-        with app.unsafe():
-            new_qs = model.questionset.QuestionSet(
-                app,
-                title = title,
-                questions = questions.split('\n')
-            )
+    @app.route('/questionset/<id>/<field>', methods = ['get'])
+    def getQuestionSetSingularField(id, field):
+        return json.dumps(QuestionSet(id)[field])
 
-            user.setPermission(new_qs, 'admin')
+    @app.route('/questionset/<id>/<field>/<int:field_id>', methods = ['get'])
+    def getQuestionSetPluralField(id, field, field_id):
+        return json.dumps(QuestionSet(id)[field + 's'][field_id])
 
-        return json.dumps(new_qs.id)
+    @app.route('/questionset/<id>/<field>', methods = ['post'])
+    def addToQuestionSetPluralField(id, field):
+        qs = QuestionSet(id)
 
-    @app.route('/api/v1/questionsets/', methods = ["GET"])
-    def all_questionsets():
+        if flask.request.form[field].startswith('['):
+            for each in json.loads(flask.request.form[field]):
+                qs[field].append(each)
+        else:
+            qs[field + 's'].append(flask.request.form[field])
 
-        user = model.user.current(app)
-        return json.dumps(list(user.getResources(type = 'QuestionSet', id_only = True)))
+        return json.dumps(qs)
 
-    @app.route('/api/v1/questionset/<id>', methods = ["GET"])
-    def get_questionset(id):
+    @app.route('/questionset/<id>/<field>', methods = ['put'])
+    def overwriteQuestionSetSingularField(id, field):
+        qs = QuestionSet(id)
+        if flask.request.form[field].startswith('['):
+            qs[field] = json.loads(flask.request.form[field])
+        else:
+            qs[field] = flask.request.form[field]
+        return json.dumps(qs)
 
-        qs = model.questionset.QuestionSet(app, id)
-        return json.dumps(dict(qs))
+    @app.route('/questionset/<id>/<field>/<int:field_id>', methods = ['put'])
+    def overwriteQuestionSetPluralField(id, field, field_id):
+        qs = QuestionSet(id)
+        qs[field + 's'][field_id] = flask.request.form[field]
+        return json.dumps(qs)
 
-    @app.route('/api/v1/questionset/<id>', methods = ["PUT"])
-    def update_questionset(id):
+    @app.route('/questionset/<id>', methods = ['delete'])
+    def deleteFromQuestionSet(id):
+        return json.dumps(QuestionSet(id).delete())
 
-        qs = model.questionset.QuestionSet(app, id)
-
-        if 'title' in flask.request.form:
-            qs['title'] = flask.request.form['title']
-
-        if 'questions' in flask.request.form:
-            qs['questions'] = flask.request.form['questions'].split('\n')
-
-        return json.dumps(dict(qs))
+    @app.route('/questionset/<id>/<field>/<int:field_id>', methods = ['delete'])
+    def removeQuestionSetField(id, field, field_id):
+        qs = QuestionSet(id)
+        del qs[field + 's'][field_id]
+        return json.dumps(qs)

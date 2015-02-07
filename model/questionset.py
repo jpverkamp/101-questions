@@ -1,18 +1,14 @@
-# -*- coding: utf-8 -*-
+from model.Model import Model
 
-import model.base
+class QuestionSet(Model):
 
-class QuestionSet(model.base.BaseModel):
-    '''A collection of questions'''
+    def __init__(self, id, **data):
+        '''
+        Create a new questionset
 
-    def __init__(self, app, id = None, **kwargs):
-        super(QuestionSet, self).__init__(
-            app,
-            id,
-            {
-                'title': None,
-                'questions': []
-            },
-            True,
-            **kwargs
-        )
+        title is just a string
+        frequency is a subset of cron format without the minute field
+        email is a valid email address, more can be added later
+        '''
+
+        Model.__init__(self, id, **data)
