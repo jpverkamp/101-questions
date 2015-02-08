@@ -59,3 +59,13 @@ class Model(dict):
         print('Deleting {path}'.format(path = self.path))
         os.remove(self.path)
         self.doNotSave = True
+
+    @classmethod
+    def listAllIDs(klass):
+        '''Get all IDs for this kind of object.'''
+
+        dir = os.path.join('data', klass.__name__)
+        if os.path.exists(dir):
+            return os.listdir(dir)
+        else:
+            return []
