@@ -1,0 +1,35 @@
+<div>
+  <label for="viewTitle">Title</label>
+  <div id="viewTitle">{{title}}</div>
+</div>
+
+<div>
+  <label for="viewID">ID</label>
+  <div id="viewID">{{id}}</div>
+</div>
+
+<div>
+  <label for="viewFrequency">Frequency</label>
+  <div id="viewFrequency">{{frequency}}</div>
+</div>
+
+<div>
+  <label for="viewEmails">Emails</label>
+  <div id="viewEmails">
+    <ul>
+    {{#each emails}}
+      <li>{{this}}</li>
+    {{/each}}
+  </ul>
+</div>
+
+<div>
+  <label for="viewQuestions">Questions</label>
+  <div id="viewQuestions">
+    <ol>
+    {{#each questions}}
+      <li>{{this}}</li>
+    {{/each}}
+    </ol>
+  </div>
+</div>
