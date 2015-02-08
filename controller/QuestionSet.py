@@ -15,7 +15,9 @@ def init(app):
             title = flask.request.form['title'],
             frequency = flask.request.form['frequency'],
             emails = [flask.request.form['email']],
-            questions = []
+            questions = [],
+            nextQuestion = 0,
+            lastSent = datetime.datetime.now().timestamp()
         ))
 
     @app.route('/questionset/<id>', methods = ['get'])
