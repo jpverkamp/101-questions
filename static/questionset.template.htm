@@ -1,44 +1,50 @@
 <div>
-  <h3>ID</h2>
-  <div id="viewID">
-    <span class="item">{{id}}</span>
-  </div>
+    <h3>ID</h2>
+    <div id="viewID">
+        <span class="item">{{id}}</span>
+    </div>
 </div>
 
 <div>
-  <h3>Title</h2>
-  <div id="viewTitle">
-    <span class="item">{{title}}</span>
-  </div>
+    <h3>Title</h2>
+    <div id="viewTitle">
+        <span class="item">{{title}}</span>
+    </div>
 </div>
 
 <div>
-  <h3>Frequency</h2>
-  <div id="viewFrequency">
-    <span class="item">{{frequency}}</span>
-  </div>
+    <h3>Frequency</h2>
+    <div id="viewFrequency">
+        <span class="item">{{frequency}}</span>
+    </div>
 </div>
 
 <div>
-  <h3>Emails</h2>
-  <div id="viewEmails">
-    <ul>
-    {{#each emails}}
-      <li><span class="item">{{this}}</span> <a href="#" class="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></li>
-    {{/each}}
-      <li><a href="#" class="new">Add new email</a></li>
-  </ul>
+    <h3>Emails</h2>
+    <div id="viewEmails">
+        <ul>
+        {{#each emails}}
+            <li><span class="item">{{this}}</span> <a href="#" class="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></li>
+        {{/each}}
+            <li>
+                    [ <a href="#" class="new">Add one</a> ]
+                    [ <a href="#" class="import">Add many</a> ]
+            </li>
+    </ul>
 
 </div>
 
 <div>
-  <h3>Questions</h2>
-  <div id="viewQuestions">
-    <ol>
-    {{#each questions}}
-      <li><span class="item">{{this}}</span> <a href="#" class="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></li>
-    {{/each}}
-      <li><a href="#" class="new">Add new question</a></li>
-    </ol>
-  </div>
+    <h3>Questions</h2>
+    <div id="viewQuestions">
+        <ol>
+        {{#each questions}}
+            <li><span class="item">{{this}}</span> <a href="#" class="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></li>
+        {{/each}}
+            <li>
+                    [ <a href="#" class="new">Add one</a> ]
+                    [ <a href="#" class="import">Add many</a> ]
+            </li>
+        </ol>
+    </div>
 </div>
