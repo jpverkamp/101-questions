@@ -1,6 +1,86 @@
 $(function() {
     $('.view#landing').show();
 
+    var editableText = function(qsid, id, field) {
+        $(id + ' .item').editable({
+            title: 'Enter new ' + field,
+            type: 'text',
+            pk: 1,
+            url: '/questionset/' + qsid + '/' + field,
+            ajaxOptions: { type: 'put' },
+            params: function(params) {
+                var result = {};
+                result[field] = params.value;
+                return result;
+            }
+        });
+    };
+
+    var editableList = function(qsid, id, field) {
+        $(id + ' .new').click(function() {
+            var postData = {};
+            postData[field] = '';
+
+            $.ajax({
+                type: 'POST',
+                url: '/questionset/' + qsid + '/' + field,
+                data: postData,
+                dataType: 'json',
+                success: renderQuestionSet
+            });
+        });
+
+        $(id + ' .import').click(function() {
+            console.log('hello word');
+
+            var postData = {};
+            postData[field] = '';
+
+            $('#import-dialog .field-name').text(field + 's');
+            $('#import-dialog-values').val('')
+            $('#import-dialog').modal('show');
+
+            $('#import-dialog-save').unbind('click').click(function() {
+                $('#import-dialog').modal('hide');
+
+                var postData = {};
+                postData[field + 's'] = JSON.stringify($('#import-dialog-values').val().split(/\n/g));
+                $.ajax({
+                    type: 'POST',
+                    url: '/questionset/' + qsid + '/' + field + 's',
+                    data: postData,
+                    dataType: 'json',
+                    success: renderQuestionSet
+                });
+            });
+        });
+
+        $(id + ' li').each(function(i, el) {
+            $(el).find('.delete').click(function() {
+                $.ajax({
+                    type: 'DELETE',
+                    url: '/questionset/' + qsid + '/' + field + '/' + i,
+                    dataType: 'json',
+                    success: renderQuestionSet
+                });
+                return false;
+            });
+
+            $(el).find('.item').editable({
+                title: 'Enter new ' + field,
+                type: 'text',
+                pk: 1,
+                url: '/questionset/' + qsid + '/' + field + '/' + i,
+                ajaxOptions: { type: 'put' },
+                params: function(params) {
+                    var result = {};
+                    result[field] = params.value;
+                    return result;
+                }
+            });
+        });
+    };
+
     var renderQuestionSet = function(data) {
         $.ajax({
             url: '/static/questionset.template.htm',
@@ -13,91 +93,11 @@ $(function() {
                 $('.container').hide();
                 $('#questionset').html(html).show();
 
-                var editableText = function(id, field) {
-                    $(id + ' .item').editable({
-                        title: 'Enter new ' + field,
-                        type: 'text',
-                        pk: 1,
-                        url: '/questionset/' + data.id + '/' + field,
-                        ajaxOptions: { type: 'put' },
-                        params: function(params) {
-                            var result = {};
-                            result[field] = params.value;
-                            return result;
-                        }
-                    });
-                };
+                editableText(data.id, '#viewTitle', 'title');
+                editableText(data.id, '#viewFrequency', 'frequency');
 
-                editableText('#viewTitle', 'title');
-                editableText('#viewFrequency', 'frequency');
-
-                var editableList = function(id, field) {
-                    $(id + ' .new').click(function() {
-                        var postData = {};
-                        postData[field] = '';
-
-                        $.ajax({
-                            type: 'POST',
-                            url: '/questionset/' + data.id + '/' + field,
-                            data: postData,
-                            dataType: 'json',
-                            success: renderQuestionSet
-                        });
-                    });
-
-                    $(id + ' .import').click(function() {
-                        console.log('hello word');
-
-                        var postData = {};
-                        postData[field] = '';
-
-                        $('#import-dialog .field-name').text(field + 's');
-                        $('#import-dialog-values').val('')
-                        $('#import-dialog').modal('show');
-
-                        $('#import-dialog-save').unbind('click').click(function() {
-                            $('#import-dialog').modal('hide');
-
-                            var postData = {};
-                            postData[field + 's'] = JSON.stringify($('#import-dialog-values').val().split(/\n/g));
-                            $.ajax({
-                                type: 'POST',
-                                url: '/questionset/' + data.id + '/' + field + 's',
-                                data: postData,
-                                dataType: 'json',
-                                success: renderQuestionSet
-                            });
-                        });
-                    });
-
-                    $(id + ' li').each(function(i, el) {
-                        $(el).find('.delete').click(function() {
-                            $.ajax({
-                                type: 'DELETE',
-                                url: '/questionset/' + data.id + '/' + field + '/' + i,
-                                dataType: 'json',
-                                success: renderQuestionSet
-                            });
-                            return false;
-                        });
-
-                        $(el).find('.item').editable({
-                            title: 'Enter new ' + field,
-                            type: 'text',
-                            pk: 1,
-                            url: '/questionset/' + data.id + '/' + field + '/' + i,
-                            ajaxOptions: { type: 'put' },
-                            params: function(params) {
-                                var result = {};
-                                result[field] = params.value;
-                                return result;
-                            }
-                        });
-                    });
-                };
-
-                editableList('#viewEmails', 'email');
-                editableList('#viewQuestions', 'question');
+                editableList(data.id, '#viewEmails', 'email');
+                editableList(data.id, '#viewQuestions', 'question');
             }
         });
     };
