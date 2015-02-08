@@ -6,14 +6,13 @@ if sys.version_info[0] != 3:
     sys.exit()
 
 import datetime
-import parsedatetime
+import pytz
 
 from model.QuestionSet import QuestionSet
+import utils
 
 now = datetime.datetime.now()
 now = now - datetime.timedelta(minutes = now.minute, seconds = now.second, microseconds = now.microsecond)
-
-parse = parsedatetime.Calendar().parse
 
 for id in QuestionSet.listAllIDs():
     qs = QuestionSet(id)
@@ -23,22 +22,37 @@ for id in QuestionSet.listAllIDs():
         print('qs:{id} is finished'.format(id = qs['id'])) # DEBUG
         continue
 
-    # Calculate when the next message should be sent
-    nextRun, _ = parse(
-        qs['frequency'],
-        qs['lastSent'] and datetime.datetime.fromtimestamp(qs['lastSent'])
-    )
-    nextRun = datetime.datetime(*nextRun[:4])
+    # Verify that we haven't sent a question in the last 12 hours
+    if now.timestamp() - qs['lastSent'] < 12 * 60 * 60:
+        print('qs:{id} was sent in the last 12 hours'.format(id = qs['id'])) # DEBUG
+        continue
 
-    print('Comparing now:{now} and next:{nextRun}'.format(now = now, nextRun = nextRun)) # DEBUG
+    # Check each possible frequency
+    fdays, fhour = utils.parseFrequency(qs['frequency'])
+    if now.hour != fhour:
+        print('qs:{id} does not match current hour (now = {now}, qs = {hour})'.format(id = qs['id'], now = now.hour, hour = fhour)) # DEBUG
+        continue
 
-    # Send the next message (either it's up now or we missed an interval)
-    if nextRun <= now:
+    matchesDate = False
+    for fday in fdays:
+        if fday[0] == 'monthly' and fday[1] == now.day:
+            print('qs:{id} does not match current hour'.format(id = qs['id'])) # DEBUG
+            matchesDate = True
+        elif fday[0] == 'weekly' and fday[1] == now.weekday:
+            print('qs:{id} does not match current hour'.format(id = qs['id'])) # DEBUG
+            matchesDate = True
+        elif fday[0] == 'daily':
+            matchesDate = True
 
-        emails = qs['emails']
-        question = qs['questions'][qs['nextQuestion']]
+    if not matchesDate:
+        print('qs:{id} does not match current date'.format(id = qs['id'])) # DEBUG
+        continue
 
-        print('Send "{question}" to emails'.format(question = question, emails = emails)) # DEBUG
+    # Made it this far, send the next question
+    emails = qs['emails']
+    question = qs['questions'][qs['nextQuestion']]
 
-        qs['nextQuestion'] += 1
-        qs['lastSent'] = now.timestamp() + 3600
+    print('Send "{question}" to emails'.format(question = question, emails = emails)) # DEBUG
+
+    qs['nextQuestion'] += 1
+    qs['lastSent'] = now.timestamp() + 3600
