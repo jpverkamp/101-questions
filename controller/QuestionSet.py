@@ -32,6 +32,12 @@ def init(app):
     def getQuestionSetPluralField(id, field, field_id):
         return json.dumps(QuestionSet(id)[field + 's'][field_id])
 
+    @app.route('/questionset/<id>/send-next', methods = ['post'])
+    def forceSendNext(id):
+        qs = QuestionSet(id)
+        qs.sendNext()
+        return json.dumps(qs)
+
     @app.route('/questionset/<id>/<field>', methods = ['post'])
     def addToQuestionSetPluralField(id, field):
         qs = QuestionSet(id)

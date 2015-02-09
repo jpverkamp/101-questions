@@ -24,11 +24,14 @@
     <div id="viewEmails">
         <ul>
         {{#each emails}}
-            <li><span class="item">{{this}}</span> <a href="#" class="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></li>
+            <li>
+                <span class="item">{{this}}</span>
+                <a href="#" class="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+            </li>
         {{/each}}
             <li>
-                    [ <a href="#" class="new">Add one</a> ]
-                    [ <a href="#" class="import">Add many</a> ]
+                    [ <a href="#" class="new">Add</a> ]
+                    [ <a href="#" class="import">Import</a> ]
             </li>
     </ul>
 
@@ -39,11 +42,15 @@
     <div id="viewQuestions">
         <ol>
         {{#each questions}}
-            <li><span class="item">{{this}}</span> <a href="#" class="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></li>
+            <li>
+                <span class="item">{{this}}</span>
+                <a href="#" class="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                <a href="#" class="send" style="display: none;"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></a>
+            </li>
         {{/each}}
             <li>
-                    [ <a href="#" class="new">Add one</a> ]
-                    [ <a href="#" class="import">Add many</a> ]
+                    [ <a href="#" class="new">Add</a> ]
+                    [ <a href="#" class="import">Import</a> ]
             </li>
         </ol>
     </div>

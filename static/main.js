@@ -66,6 +66,16 @@ $(function() {
                 return false;
             });
 
+            $(el).find('.send').click(function() {
+                console.log('sending next!');
+                $.ajax({
+                    type: 'POST',
+                    url: '/questionset/' + qsid + '/send-next',
+                    dataType: 'json',
+                    success: renderQuestionSet
+                });
+            });
+
             $(el).find('.item').editable({
                 title: 'Enter new ' + field,
                 type: 'text',
@@ -98,9 +108,14 @@ $(function() {
 
                 editableList(data.id, '#viewEmails', 'email');
                 editableList(data.id, '#viewQuestions', 'question');
+
+                var $next = $($('#viewQuestions li')[data.nextQuestion]);
+                $next.css('font-weight', 'bold');
+                $next.find('.send').show();
             }
         });
     };
+
 
     $('#loadButton').click(function() {
         var id = $('input[name="loadID"]').val();
