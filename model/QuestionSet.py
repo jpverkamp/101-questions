@@ -76,10 +76,10 @@ class QuestionSet(Model):
         subject = '{title}: Day {index} of {count}'.format(
             title = self['title'],
             index = self['nextQuestion'] + 1,
-            len(self['questions'])
+            count = len(self['questions'])
         )
         body = self['questions'][self['nextQuestion']]
-        
+
         model.Mailer.send(emails = emails, subject = subject, body = body)
 
         self['nextQuestion'] += 1
