@@ -1,9 +1,9 @@
 import datetime
 
+import model.Mailer
 from model.Model import Model
 
 class QuestionSet(Model):
-
     def __init__(self, id, **data):
         '''
         Create a new questionset
@@ -73,9 +73,14 @@ class QuestionSet(Model):
 
         # Made it this far, send the next question
         emails = self['emails']
-        question = self['questions'][self['nextQuestion']]
-
-        print('Send "{question}" to emails'.format(question = question, emails = emails)) # DEBUG
+        subject = '{title}: Day {index} of {count}'.format(
+            title = self['title'],
+            index = self['nextQuestion'] + 1,
+            len(self['questions'])
+        )
+        body = self['questions'][self['nextQuestion']]
+        
+        model.Mailer.send(emails = emails, subject = subject, body = body)
 
         self['nextQuestion'] += 1
         self['lastSent'] = now.timestamp() + 3600
