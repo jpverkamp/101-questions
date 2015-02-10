@@ -6,7 +6,6 @@ if sys.version_info[0] != 3:
     sys.exit()
 
 import datetime
-import pytz
 
 from model.QuestionSet import QuestionSet
 import utils
