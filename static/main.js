@@ -67,7 +67,6 @@ $(function() {
             });
 
             $(el).find('.send').click(function() {
-                console.log('sending next!');
                 $.ajax({
                     type: 'POST',
                     url: '/questionset/' + qsid + '/send-next',
