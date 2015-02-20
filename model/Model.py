@@ -51,7 +51,7 @@ class Model(dict):
         if not self.doNotSave:
           print('Saving {path}'.format(path = self.path))
           with open(self.path, 'w') as fout:
-              json.dump(self, fout)
+              json.dump(self, fout, indent = 4, sort_keys = True)
 
     def delete(self):
         '''Delete the object'''

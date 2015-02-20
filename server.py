@@ -8,7 +8,10 @@ if sys.version_info[0] != 3:
 import flask
 
 app = flask.Flask('101qs')
-app.debug = True
+app.config.update(
+    #DEBUG=True,
+    JSON_AS_ASCII = False,
+)
 
 import controller.QuestionSet
 controller.QuestionSet.init(app)
