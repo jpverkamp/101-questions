@@ -75,7 +75,7 @@ class QuestionSet(Model):
 
         # Made it this far, send the next question
         emails = self['emails']
-        subject = '{title}: Day {index} of {count}'.format(
+        subject = '{title} Day {index} of {count}'.format(
             title = self['title'],
             index = self['nextQuestion'] + 1,
             count = len(self['questions'])
