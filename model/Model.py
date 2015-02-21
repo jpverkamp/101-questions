@@ -1,3 +1,4 @@
+import codecs
 import json
 import os
 import threading
@@ -32,7 +33,7 @@ class Model(dict):
 
         elif os.path.exists(self.path):
             print('Loading {path}'.format(path = self.path))
-            with open(self.path, 'r') as fin:
+            with codecs.open(self.path, 'r', 'utf-8') as fin:
                 for k, v in json.load(fin).items():
                     self[k] = v
 
@@ -50,7 +51,7 @@ class Model(dict):
 
         if not self.doNotSave:
           print('Saving {path}'.format(path = self.path))
-          with open(self.path, 'w') as fout:
+          with codecs.open(self.path, 'w', 'utf-8') as fout:
               json.dump(self, fout, indent = 4, sort_keys = True)
 
     def delete(self):
