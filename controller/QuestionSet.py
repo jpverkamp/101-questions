@@ -73,5 +73,10 @@ def init(app):
     @app.route('/questionset/<id>/<field>/<int:field_id>', methods = ['delete'])
     def removeQuestionSetField(id, field, field_id):
         qs = QuestionSet(id)
+
+        # If deleting a question that's already been asked, move the indicator back
+        if field == 'question' and field_id < qs['nextQuestion']:
+            qs['nextQuestion'] -= 1
+
         del qs[field + 's'][field_id]
         return json.dumps(qs)
