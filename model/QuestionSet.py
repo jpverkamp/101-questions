@@ -33,9 +33,9 @@ class QuestionSet(Model):
             print('NOSEND qs:{id} is finished'.format(id = self['id'])) # DEBUG
             return False
 
-        # Verify that we haven't sent a question in the last 12 hours
-        if now.timestamp() - self['lastSent'] < 12 * 60 * 60:
-            print('NOSEND qs:{id} was sent in the last 12 hours'.format(id = self['id'])) # DEBUG
+        # Verify that we haven't sent a question in the last hour
+        if now.timestamp() - self['lastSent'] < 60 * 60:
+            print('NOSEND qs:{id} was sent in the last hour'.format(id = self['id'])) # DEBUG
             return False
 
         # Check each possible frequency
