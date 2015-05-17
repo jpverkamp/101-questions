@@ -9,7 +9,7 @@ import flask
 
 app = flask.Flask('101qs')
 app.config.update(
-    #DEBUG=True,
+    DEBUG='--debug' in sys.argv,
     JSON_AS_ASCII = False,
 )
 

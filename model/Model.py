@@ -1,6 +1,7 @@
 import codecs
 import json
 import os
+import redis
 import threading
 import time
 import utils
@@ -22,20 +23,20 @@ class Model(dict):
         if not id:
             id = utils.randomID()
 
+        self.redis = redis.StrictRedis(host='redis', port=6379, db=0)
+
         self.doNotSave = False
         self.id = id
-        self.path = os.path.join('data', self.__class__.__name__, self.id)
-        if not os.path.exists(os.path.dirname(self.path)):
-            os.makedirs(os.path.dirname(self.path))
+        self.key = os.path.join(self.__class__.__name__, self.id)
 
         if create:
             pass
 
-        elif os.path.exists(self.path):
-            print('Loading {path}'.format(path = self.path))
-            with codecs.open(self.path, 'r', 'utf-8') as fin:
-                for k, v in json.load(fin).items():
-                    self[k] = v
+        elif self.redis.exists(self.key):
+            print('Loading {path}'.format(path = self.key))
+            js = self.redis.get(self.key).decode("utf-8")
+            for k, v in json.loads(js).items():
+                self[k] = v
 
         else:
             raise Exception('Object does not exist')
@@ -50,23 +51,21 @@ class Model(dict):
         '''When the object in unloaded, save it to disk.'''
 
         if not self.doNotSave:
-          print('Saving {path}'.format(path = self.path))
-          with codecs.open(self.path, 'w', 'utf-8') as fout:
-              json.dump(self, fout, indent = 4, sort_keys = True)
+          print('Saving {path}'.format(path = self.key))
+          js = json.dumps(self)
+          self.redis.set(self.key, js)
 
     def delete(self):
         '''Delete the object'''
 
-        print('Deleting {path}'.format(path = self.path))
-        os.remove(self.path)
+        print('Deleting {path}'.format(path = self.key))
+        self.redis.delete(self.key)
         self.doNotSave = True
 
     @classmethod
     def listAllIDs(klass):
         '''Get all IDs for this kind of object.'''
 
-        dir = os.path.join('data', klass.__name__)
-        if os.path.exists(dir):
-            return os.listdir(dir)
-        else:
-            return []
+        prefix = klass.__name__
+        keys = [key.split('/')[-1] for key in self.redis.keys(prefix + '*')]
+        return keys

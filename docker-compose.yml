@@ -1,0 +1,9 @@
+web:
+    build: .
+    links:
+    - redis
+    ports:
+    - "10177:10177"
+
+redis:
+    image: redis
