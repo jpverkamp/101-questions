@@ -8,7 +8,7 @@ WORKDIR /app
 ADD requirements.txt /app/
 RUN pip install -r requirements.txt
 
-ADD crontab /etc/cron.d/101-questions/
+ADD crontab /etc/cron.d/101-questions
 RUN chmod 0644 /etc/cron.d/101-questions
 
 ADD . /app
