@@ -1,2 +1,4 @@
 # Send out any 101 questions emails for this hour
-5 * * * * cd /app && /usr/local/bin/python cron.py >> /var/log/cron.log 2>&1
+5 * * * * cd /app && . ./env.conf && /usr/local/bin/python cron.py >> /var/log/cron.log 2>&1
+
+# 01psctc
