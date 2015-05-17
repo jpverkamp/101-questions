@@ -10,6 +10,8 @@ import datetime
 from model.QuestionSet import QuestionSet
 import utils
 
+print('Running cron.py')
+
 now = datetime.datetime.now()
 now = now - datetime.timedelta(minutes = now.minute, seconds = now.second, microseconds = now.microsecond)
 

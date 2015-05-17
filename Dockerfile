@@ -6,11 +6,11 @@ RUN mkdir /app
 WORKDIR /app
 
 ADD requirements.txt /app/
-RUN pip install -r requirements.txt
-
-ADD crontab /etc/cron.d/101-questions
-RUN chmod 0644 /etc/cron.d/101-questions
+RUN pip3 install -r requirements.txt
 
 ADD . /app
 
-CMD cron && python3 server.py
+RUN crontab /app/crontab
+RUN touch /var/log/cron.log
+
+CMD cron && ./server.py

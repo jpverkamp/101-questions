@@ -66,6 +66,8 @@ class Model(dict):
     def listAllIDs(klass):
         '''Get all IDs for this kind of object.'''
 
+        r = redis.StrictRedis(host='redis', port=6379, db=0)
+
         prefix = klass.__name__
-        keys = [key.split('/')[-1] for key in self.redis.keys(prefix + '*')]
+        keys = [key.split('/')[-1] for key in r.keys(prefix + '*')]
         return keys

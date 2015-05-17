@@ -7,7 +7,7 @@ if sys.version_info[0] != 3:
 
 import flask
 
-app = flask.Flask('101qs')
+app = flask.Flask(__name__)
 app.config.update(
     DEBUG='--debug' in sys.argv,
     JSON_AS_ASCII = False,
