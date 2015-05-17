@@ -4,6 +4,8 @@ web:
     - redis
     ports:
     - "10177:10177"
+    env_file:
+    - "./env.conf"
 
 redis:
     image: redis
