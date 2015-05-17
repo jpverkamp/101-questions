@@ -7,3 +7,5 @@ web:
 
 redis:
     image: redis
+    volumes:
+    - data:/data
