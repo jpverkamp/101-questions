@@ -7,8 +7,7 @@ class User(RedisObject):
         RedisObject.__init__(self,
             name = name,
             id = email,
-            questionsets = [],
-            friends = []
+            questionsets = []
         )
 
         # This needs to be here to trigger __setitem__ below

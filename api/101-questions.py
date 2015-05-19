@@ -7,6 +7,7 @@ r.flushall()
 # ----- ------
 
 import datetime
+import pprint
 
 from models import *
 
@@ -24,7 +25,6 @@ print('pwd 3', u.verifyPassword('password'))
 print('name loaded', u['name'])
 
 u2 = User('Aurora', 'princessro07@gmail.com', 'password')
-u['friends'].append(u2)
 u.save()
 
 del u
@@ -32,19 +32,19 @@ del u2
 
 u3 = User.load('me@jverkamp.com')
 
-print(u3['name'], 'is friends with', ', '.join([su['name'] for su in u3['friends']]))
-
 qss = []
 for i in range(3):
     qss.append(QuestionSet(title = 'Test qs ' + str(i), questions = [Question('test ' + str(j)) for j in range(10)]))
 
 qr = QuestionRun(
     title = 'test',
-    start_date = datetime.datetime.now(),
+    start_date = str(datetime.datetime.now()),
     frequency = 'daily',
     users = [u3, User.load('princessro07@gmail.com')],
     questionsets = qss
 )
+pprint.pprint(qr.data)
+qr.save()
 
 print(qr)
 
