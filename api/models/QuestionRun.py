@@ -1,4 +1,4 @@
-from models.RedisObject import RedisObject
+from lib.RedisObject import RedisObject
 from models.AnsweredQuestion import AnsweredQuestion
 
 class QuestionRun(RedisObject):

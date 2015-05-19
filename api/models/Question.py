@@ -1,4 +1,4 @@
-from models.RedisObject import RedisObject
+from lib.RedisObject import RedisObject
 
 class Question(RedisObject):
     def __init__(self, text):
