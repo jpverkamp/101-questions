@@ -22,8 +22,6 @@ class RedisObject(object):
         self.key = self.__class__.__name__ + ':' + self.id
         self.data = {}
 
-        print('New object: {0}'.format(self.key)) # DEBUG
-
         for k, v in kwargs.items():
             self[k] = v
 
@@ -33,9 +31,7 @@ class RedisObject(object):
         # If the class is in the ID, use that one
         if ':' in id:
             cls_name, id = id.split(':')
-            print('Dynamically swapping class with {0}'.format(cls_name))
             if hasattr(models, cls_name):
-                print('Class exists, loading')
                 cls = getattr(models, cls_name)
 
         obj = RedisObject(id)
@@ -44,8 +40,6 @@ class RedisObject(object):
         obj.id = id
         obj.key = obj.__class__.__name__ + ':' + obj.id
 
-        print('Loading object: {0}'.format(obj.key)) # DEBUG
-
         js = json.loads(
             obj.redis.get(obj.key).decode('utf-8'),
             cls = RedisObjectJSONDecoder
@@ -53,14 +47,9 @@ class RedisObject(object):
         for k, v in js.items():
             obj.data[k] = v
 
-        print('Loaded data: {0}'.format(obj.data)) # DEBUG
-
         return obj
 
     def save(self):
-        print('Saving object: {0}'.format(self.key)) # DEBUG
-        print('Saving data: {0}'.format(self.data)) # DEBUG
-
         self.redis.set(
             self.key,
             json.dumps(
