@@ -1,4 +1,5 @@
 from models.RedisObject import RedisObject
+from models.AnsweredQuestion import AnsweredQuestion
 
 class QuestionRun(RedisObject):
     def __init__(self, title, start_date, frequency, users = None, questionsets = None, questions = None):
@@ -17,5 +18,5 @@ class QuestionRun(RedisObject):
             start_date = start_date,
             frequency = frequency,
             users = users,
-            questions = questions
+            questions = [AnsweredQuestion(q) for q in questions]
         )
