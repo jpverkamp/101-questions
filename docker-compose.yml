@@ -1,13 +1,13 @@
-web:
-    build: .
+api:
+    build: ./api
     links:
-    - redis
+        - redis
     ports:
-    - "10177:10177"
+        - 10177:10177
     env_file:
-    - "./env.conf"
+        - ./configs/email.env
 
 redis:
     image: redis
     volumes:
-    - data:/data
+        - data:/data
