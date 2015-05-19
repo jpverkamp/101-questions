@@ -19,7 +19,6 @@ class RedisObject(object):
         else:
             self.id = ''.join(random.choice(ID_ALPHABET) for i in range(ID_LENGTH))
 
-        self.key = self.__class__.__name__ + ':' + self.id
         self.data = {}
 
         for k, v in kwargs.items():
@@ -38,10 +37,9 @@ class RedisObject(object):
         obj.__class__ = cls
 
         obj.id = id
-        obj.key = obj.__class__.__name__ + ':' + obj.id
 
         js = json.loads(
-            obj.redis.get(obj.key).decode('utf-8'),
+            obj.redis.hget(obj.__class__.__name__, obj.id).decode('utf-8'),
             cls = RedisObjectJSONDecoder
         )
         for k, v in js.items():
@@ -50,8 +48,9 @@ class RedisObject(object):
         return obj
 
     def save(self):
-        self.redis.set(
-            self.key,
+        self.redis.hset(
+            self.__class__.__name__,
+            self.id,
             json.dumps(
                 self.data,
                 cls = RedisObjectJSONEncoder
@@ -72,14 +71,17 @@ class RedisObject(object):
             yield key
 
     def __str__(self):
-        return self.key + str(self.data)
+        return self.__class__.__name__ + ':' + self.id + str(self.data)
+
+    def __repr__(self):
+        return str(self)
 
 class RedisObjectJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, RedisObject):
-            return {'@ref': o.key}
+            return {'@ref': o.__class__.__name__ + ':' + o.id}
         else:
-            return o
+            return json.JSONEncoder.default(self, o)
 
 class RedisObjectJSONDecoder(json.JSONDecoder):
     def __init__(self, *args, **kwargs):
