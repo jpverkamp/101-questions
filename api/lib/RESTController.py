@@ -30,15 +30,31 @@ class RESTController(object):
         name = cls.__name__.lower()
         print('Binding methods for {0}'.format(name))
 
+        # Read an object
         @app.route('/api/{name}/<id>'.format(name = name), methods = ['GET'])
-        @renamed('GET_{name}'.format(name = name))
+        @renamed('GET_{name}_BY_ID'.format(name = name))
         def get_object(id):
             obj = cls.load(id)
             data = {key: obj[key] for key in obj if key in visibleFields}
             return json.dumps(data, indent = True, sort_keys = True)
 
+        # Create a new object
+        @app.route('/api/{name}'.format(name = name), methods = ['PUT'])
+        @renamed('PUT_{name}'.format(name = name))
+        def create_object():
+
+            import sys
+            sys.stdout.flush()
+
+            # Directly casting to dict results in key: [value] rather than key: value
+            obj = cls(**{field: flask.request.form[field] for field in flask.request.form})
+
+            return json.dumps(True)
+            #return get_object(obj.id)
+
+        # Modify one or more fields on an object
         @app.route('/api/{name}/<id>'.format(name = name), methods = ['POST'])
-        @renamed('POST_{name}'.format(name = name))
+        @renamed('POST_{name}_BY_ID'.format(name = name))
         def update_fields(id):
             for field in flask.request.form:
                 if not field in mutableFields:
@@ -53,3 +69,4 @@ class RESTController(object):
             obj.save()
 
             return json.dumps(True)
+            #return get_object(obj.id)
