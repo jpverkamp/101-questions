@@ -1,5 +1,5 @@
 from lib.RESTController import RESTController
-from models.Question import Question
+from models import Question
 
 class QuestionController(RESTController):
 

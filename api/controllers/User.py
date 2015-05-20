@@ -1,5 +1,5 @@
 from lib.RESTController import RESTController
-from models.User import User
+from models import User, QuestionSet
 
 class UserController(RESTController):
 
@@ -7,7 +7,7 @@ class UserController(RESTController):
         RESTController.__init__(self,
             app,
             User,
-            visibleFields = ['name', 'questions'],
+            visibleFields = ['name', 'questionsets'],
             mutableFields = ['name'],
-            mutableListFields = ['name']
+            mutableListFields = [('questionsets', QuestionSet)]
         )
