@@ -1,9 +1,19 @@
+web:
+    image: nginx
+    ports:
+        - 80:80
+    links:
+        - api
+    volumes:
+        - nginx/sites-enabled:/etc/nginx/conf.d
+        - ./web:/var/www/html
+
 api:
     build: ./api
     links:
         - redis
-    ports:
-        - 8001:8001
+    expose:
+        - 8001
     env_file:
         - ./configs/email.env
 
