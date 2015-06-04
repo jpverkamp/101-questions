@@ -1,7 +1,3 @@
 
-from controllers.Answer import AnswerController
-from controllers.AnsweredQuestion import AnsweredQuestionController
-from controllers.Question import QuestionController
-from controllers.QuestionSet import QuestionSetController
-from controllers.QuestionRun import QuestionRunController
-from controllers.User import UserController
+from controllers.User import user_api
+from controllers.QuestionSet import questionset_api
