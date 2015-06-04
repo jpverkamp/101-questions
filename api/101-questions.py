@@ -7,11 +7,12 @@ r.flushall()
 # /DEBUG
 
 import flask
-import inspect
+import os
 import sys
 
 app = flask.Flask(__name__)
 app.debug = True
+app.secret_key = os.urandom(24)
 
 import controllers
 app.register_blueprint(controllers.user_api)

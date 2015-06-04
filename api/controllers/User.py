@@ -1,32 +1,62 @@
 import bcrypt
 import flask
 import json
-import redis
+
+from flask.ext.api import status
+
+import utils
 
 user_api = flask.Blueprint('user_api', __name__, url_prefix='/api/user')
+
+# user:<email> is user data
+# user:<email>:questionsets is a list of questionsets for a user
+
+@user_api.route('/', methods = ['GET'])
+def get_current_user():
+    '''Get the current user if logged in'''
+
+    if not 'email' in flask.session:
+        flask.abort(status.HTTP_401_UNAUTHORIZED, 'Not logged in')
+
+    email = flask.session['email']
+    u_key = 'user:{email}'.format(email = email)
+    uqs_key = 'user:{email}:questionsets'.format(email = email)
+
+    r = utils.redis()
+
+    user = r.hgetall(u_key)
+    user['questionset-count'] = r.llen(uqs_key)
+
+    del user['password']
+
+    return json.dumps(user)
 
 @user_api.route('/', methods = ['PUT'])
 def create_user():
     '''Create a new user if a user with that email doesn't already exist'''
 
-    r = redis.StrictRedis(host = 'redis')
+    logout()
+
+    r = utils.redis()
 
     email = flask.request.form['email']
     name = flask.request.form['name']
     password = flask.request.form['password']
 
-    rkey = 'user:' + email
+    u_key = 'user:' + email
 
-    if r.exists(rkey):
-        flask.abort(409, msg = 'Email already exists')
+    if r.exists(u_key):
+        flask.abort(status.HTTP_409_CONFLICT, 'Email already exists')
 
     password_hash = bcrypt.hashpw(
         password.encode('utf-8'),
         bcrypt.gensalt()
     ).decode('utf-8')
 
-    r.hset(rkey, 'name', name)
-    r.hset(rkey, 'password', password_hash)
+    r.hset(u_key, 'name', name)
+    r.hset(u_key, 'password', password_hash)
+
+    return json.dumps(True)
 
 @user_api.route('/', methods = ['POST'])
 def change_user_fields():
@@ -38,17 +68,17 @@ def change_user_fields():
     '''
 
     if not 'email' in flask.session:
-        flask.abort(401, 'Not logged in')
+        flask.abort(status.HTTP_401_UNAUTHORIZED, 'Not logged in')
 
     email = flask.session['email']
-    rkey = 'user:' + email
+    u_key = 'user:' + email
 
-    if not r.exists(rkey):
-        flask.abort(404, msg = 'User not found')
+    if not r.exists(u_key):
+        flask.abort(status.HTTP_404_NOT_FOUND, 'User not found')
 
     if 'name' in flask.request.form:
 
-        r.hset(rkey, 'name', name)
+        r.hset(u_key, 'name', name)
 
     if 'old-password' in flask.request.form and 'new-password' in flask.request.form:
 
@@ -60,41 +90,46 @@ def change_user_fields():
             old_password.encode('utf-8'),
             old_password_hash.encode('utf-8')
         ).decode('utf-8')):
-            flask.abort(403, msg = 'Invalid password')
-
+            flask.abort(status.HTTP_403_FORBIDDEN, 'Invalid password')
 
         new_password_hash = bcrypt.hashpw(
             new_password.encode('utf-8'),
             bcrypt.gensalt()
         ).decode('utf-8')
 
-        r.hset(rkey, 'password', new_password_hash)
+        r.hset(u_key, 'password', new_password_hash)
+
+    return json.dumps(True)
 
 @user_api.route('/login', methods = ['POST'])
 def login():
     '''Login a user'''
 
-    r = redis.StrictRedis(host = 'redis')
+    r = utils.redis()
 
     email = flask.request.form['email']
     password = flask.request.form['password']
 
-    if not r.exists(email):
-        flask.abort(404, msg = 'User not found')
+    u_key = 'user:' + email
 
-    rkey = 'user:' + email
+    if not r.exists(u_key):
+        flask.abort(status.HTTP_404_NOT_FOUND, 'User not found')
 
-    password_hash = r.hget('user:' + email)
-    if not (password_hash == bcrypt.hashpw(
-        password.encode('utf-8'),
-        password_hash.encode('utf-8')
-    ).decode('utf-8')):
-        flask.abort(403, msg = 'Invalid password')
+    real_password_hash = r.hget(u_key, 'password')
+    test_password_hash = bcrypt.hashpw(password.encode('utf-8'), real_password_hash.encode('utf-8')).decode('utf-8')
+
+    if real_password_hash != test_password_hash:
+        flask.abort(status.HTTP_403_FORBIDDEN, 'Invalid password')
 
     flask.session['email'] = email
+
+    return json.dumps(True)
 
 @user_api.route('/logout', methods = ['POST'])
 def logout():
     '''Logout a user'''
 
-    del flask.session['current_user']
+    if 'email' in flask.session:
+        del flask.session['email']
+
+    return json.dumps(True)
