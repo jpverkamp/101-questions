@@ -1,4 +1,5 @@
 import flask
+import json
 
 from flask.ext.api import status
 
@@ -64,87 +65,94 @@ def make_blueprint(cls):
         return json.dumps(True)
 
     for subname in lists:
-        @api.route('/<id>/' + subname, methods = ['PUT'])
-        @renamed('add_' + subname + '_to_' + name)
-        def add_to_list(id):
-            '''
-            Add a subobject to this object
+        # This has to be a function to create a new scope that captures subname
+        def bind_subname(subname):
+            url_subname = subname.lower()
 
-            Options:
-            - Specify a existing RedisObject's ID to add it to the list
-            - Specify all the fields necessary to create a RedisObject to create it and add it
-            - Specify 'value' to create other Python primitives
-            '''
+            @api.route('/<id>/' + url_subname, methods = ['PUT'])
+            @renamed('add_' + url_subname + '_to_' + name)
+            def add_to_list(id):
+                '''
+                Add a subobject to this object
 
-            obj = cls(id)
+                Options:
+                - Specify a existing RedisObject's ID to add it to the list
+                - Specify all the fields necessary to create a RedisObject to create it and add it
+                - Specify 'value' to create other Python primitives
+                '''
 
-            # For RedisObject lists
-            if isinstance(lists[subname], RedisObject):
-                # Add already created items by id
-                if 'id' in flask.request.form:
-                    subobj = lists[subname](flask.request.form['id'])
+                obj = cls(id)
 
-                # Otherwise, create a new object
+                # For RedisObject lists
+                if issubclass(lists[subname], RedisObject):
+                    # Add already created items by id
+                    if 'id' in flask.request.form:
+                        subobj = lists[subname](flask.request.form['id'])
+
+                    # Otherwise, create a new object
+                    else:
+                        params = {
+                            field : flask.request.form[field]
+                            for field in getattr(lists[subname], 'fields', {})
+                        }
+
+                        subobj = lists[subname](**params)
+
+                # For non-RedisObject lists
                 else:
-                    params = {
-                        field : flask.request.form[field]
-                        for field in getattr(lists[subname], 'fields', {})
-                    }
-                    subobj = lists[subname](**params)
+                    subobj = lists[subname](flask.request.form['value'])
 
-            # For non-RedisObject lists
-            else:
-                subobj = lists[subname](flask.request.form['value'])
+                if not subobj:
+                    flask.abort(status.HTTP_404_NOT_FOUND, str(subobj) + ' does not exist')
 
-            if not subobj:
-                flask.abort(status.HTTP_404_NOT_FOUND, str(subobj) + ' does not exist')
+                obj.rpush(subname, subobj)
 
-            obj.rpush(subname, subobj)
+                return json.dumps(True)
 
-            return json.dumps(True)
+            @api.route('/<id>/' + url_subname + '/<int:index>', methods = ['DELETE'])
+            @renamed('delete_' + url_subname + '_from_' + name)
+            def remove_from_list(id, index):
 
-        @api.route('/<id>/' + subname + '/<int:index>', methods = ['DELETE'])
-        @renamed('delete_' + subname + '_from_' + name)
-        def remove_from_list(id, index):
+                obj = cls(id)
+                obj.remove(subname, index)
 
-            obj = cls(id)
-            obj.remove(subname, index)
+                return json.dumps(True)
 
-            return json.dumps(True)
+            @api.route('/<id>/' + url_subname + '/<int:index>', methods = ['GET'])
+            @renamed('read_' + url_subname + '_from_' + name)
+            def get_from_list(id, index):
 
-        @api.route('/<id>/' + subname + '/<int:index>', methods = ['GET'])
-        @renamed('read_' + subname + '_from_' + name)
-        def get_from_list(id, index):
+                obj = cls(id)
+                return repr(obj.index(subname, index))
 
-            obj = cls(id)
-            return repr(obj.index(subname, index))
+            @api.route('/<id>/' + url_subname + '/<int:index>', methods = ['POST'])
+            @renamed('update_' + url_subname + '_in_' + name)
+            def update_in_list(id):
+                '''
+                Update a subobject of this object
 
-        @api.route('/<id>/' + subname + '/<int:index>', methods = ['POST'])
-        @renamed('update_' + subname + '_in_' + name)
-        def update_in_list(id):
-            '''
-            Update a subobject of this object
+                Options:
+                - For a RedisObject, specify any fields you wish to change
+                - For other Python primitives, specify the new 'value'
+                '''
 
-            Options:
-            - For a RedisObject, specify any fields you wish to change
-            - For other Python primitives, specify the new 'value'
-            '''
+                obj = cls(id)
 
-            obj = cls(id)
+                # For RedisObject lists
+                if issubclass(lists[subname], RedisObject):
+                    subfields = getattr(lists[subname], 'fields', {})
 
-            # For RedisObject lists
-            if isinstance(lists[subname], RedisObject):
-                subfields = getattr(lists[subname], 'fields', {})
+                    for field in subfields:
+                        if field in flask.request.form:
+                            obj['subfield'] = subfields[field](flask.request.form[field])
 
-                for field in subfields:
-                    if field in flask.request.form:
-                        obj['subfield'] = subfields[field](flask.request.form[field])
+                # For non-RedisObject lists
+                else:
+                    value = lists[subname](flask.request.form['value'])
+                    obj['field'] = value
 
-            # For non-RedisObject lists
-            else:
-                value = lists[subname](flask.request.form['value'])
-                obj['field'] = value
+                return json.dumps(True)
 
-            return json.dumps(True)
+        bind_subname(subname)
 
     return api
