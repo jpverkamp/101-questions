@@ -120,7 +120,7 @@ def make_blueprint(cls):
             def list_from_list(id, lo, hi):
 
                 obj = cls(id)
-                subobjs = [lists[subname](subid) for subid in obj.lrange(subname, lo, hi)]
+                subobjs = obj.lrange(subname, lo, hi)
 
                 # TODO: This is ugly, but I think it works?
                 return ('[\n' +  ',\n'.join(map(repr, subobjs)) + ']')
