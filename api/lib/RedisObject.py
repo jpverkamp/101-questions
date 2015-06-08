@@ -22,7 +22,7 @@ class RedisObject(object):
         print('init called in {cls} with id = {id}'.format(cls = self.__class__.__name__, id = id))
 
         self.redis = redis.StrictRedis(host = 'redis', decode_responses = True)
-        self.id = id or base64.urlsafe_b64encode(os.urandom(15)).decode('utf-8')
+        self.id = id or base64.urlsafe_b64encode(os.urandom(9)).decode('utf-8')
 
         for k, v in kwargs.items():
             if isinstance(v, list):
@@ -122,7 +122,7 @@ class RedisObject(object):
 
             raise Exception("Cannot set child lists directly")
 
-    def _redisListWrapper(self, f, *args):
+    def _redisListWrapper(self, f, key, *args, decode_responses = True):
         '''Helper to do list functions.'''
 
         name = self.__class__.__name__
@@ -133,15 +133,18 @@ class RedisObject(object):
 
         obj_key = '{name}:{id}:{key}'.format(name = name, id = self.id, key = key)
         response = f(obj_key, *args)
-        if isinstance(response, list):
-            return map(lists[key], vals)
+
+        if not decode_responses:
+            return response
+        elif isinstance(response, list):
+            return map(lists[key], response)
         elif response:
             return lists[key](response)
         else:
             return None
 
     def lrange(self, key, lo = 0, hi = -1):
-        self._redisListWrapper(self.redis.lrange, key, lo, hi)
+        return self._redisListWrapper(self.redis.lrange, key, lo, hi)
 
     def lpush(self, key, val):
         return self._redisListWrapper(self.redis.lpush, key, val)
@@ -155,15 +158,18 @@ class RedisObject(object):
     def rpop(self, key):
         return self._redisListWrapper(self.redis.rpop, key)
 
-    def index(self, index):
-        return self._redisListWrapper(self.redis.lindex, index)
+    def length(self, key):
+        return self._redisListWrapper(self.redis.llen, key, decode_responses = False)
 
-    def set(self, index, val):
-        return self._redisListWrapper(self.redis.lset, index, val)
+    def index(self, key, index):
+        return self._redisListWrapper(self.redis.lindex, key, index)
 
-    def remove(self, index):
-        self.set(index, '__DELETED__')
-        return self._redisListWrapper(self.redis.lrem, '__DELETED__')
+    def set(self, key, index, val):
+        return self._redisListWrapper(self.redis.lset, key, index, val)
+
+    def remove(self, key, index):
+        self.set(key, index, '__DELETED__')
+        return self._redisListWrapper(self.redis.lrem, key, '__DELETED__')
 
     def __str__(self):
         '''Return this object as a string for testing purposes.'''
@@ -179,9 +185,23 @@ class RedisObject(object):
         fields = getattr(self.__class__, 'fields', {})
         lists = getattr(self.__class__, 'lists', {})
 
-        return json.dumps({
-            name : self[name]
-            for name in (list(fields.keys()) + list(lists.keys()))
-        }, indent = True, sort_keys = True, default = str)
+        d = {
+            field : self[field]
+            for field in fields
+        }
 
-        # TODO: Do I want to dump list children or just their counts?
+        # Only fetch the first ten items for each sublist
+        # TODO: Paramaterize the 'ten'?
+
+        if lists:
+            d['lists'] = {
+                list: {
+                    'count': self.length(list),
+                    'items': [
+                        item.id if issubclass(lists[list], RedisObject) else item
+                        for item in self.lrange(list, 0, 10)
+                    ]
+                } for list in lists
+            }
+
+        return json.dumps(d, indent = True, sort_keys = True, default = str)
