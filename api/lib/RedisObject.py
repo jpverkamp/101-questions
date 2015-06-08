@@ -19,10 +19,13 @@ class RedisObject(object):
             can use RedisObjects
         '''
 
-        print('init called in {cls} with id = {id}'.format(cls = self.__class__.__name__, id = id))
-
         self.redis = redis.StrictRedis(host = 'redis', decode_responses = True)
         self.id = id or base64.urlsafe_b64encode(os.urandom(9)).decode('utf-8')
+
+        # IDs may contain class name
+        # TODO: Figure this part out
+        # if ':' in self.id and self.id.split(':')[0] == self.__class__.__name__:
+        #     self.id = self.id.split(':', 1)[1]
 
         for k, v in kwargs.items():
             if isinstance(v, list):
@@ -87,7 +90,7 @@ class RedisObject(object):
             obj_key = '{name}:{id}:{key}'.format(name = name, id = self.id, key = key)
             vals = self.redis.lrange(obj_key, 0, -1)
             if vals:
-                return map(lists[key], vals)
+                return list(map(lists[key], vals))
             else:
                 return []
 
@@ -137,7 +140,7 @@ class RedisObject(object):
         if not decode_responses:
             return response
         elif isinstance(response, list):
-            return map(lists[key], response)
+            return list(map(lists[key], response))
         elif response:
             return lists[key](response)
         else:
@@ -147,13 +150,13 @@ class RedisObject(object):
         return self._redisListWrapper(self.redis.lrange, key, lo, hi)
 
     def lpush(self, key, val):
-        return self._redisListWrapper(self.redis.lpush, key, val)
+        return self._redisListWrapper(self.redis.lpush, key, val, decode_responses = False)
 
     def lpop(self, key):
         return self._redisListWrapper(self.redis.lpop, key)
 
     def rpush(self, key, val):
-        return self._redisListWrapper(self.redis.rpush, key, val)
+        return self._redisListWrapper(self.redis.rpush, key, val, decode_responses = False)
 
     def rpop(self, key):
         return self._redisListWrapper(self.redis.rpop, key)
@@ -169,7 +172,7 @@ class RedisObject(object):
 
     def remove(self, key, index):
         self.set(key, index, '__DELETED__')
-        return self._redisListWrapper(self.redis.lrem, key, '__DELETED__')
+        return self._redisListWrapper(self.redis.lrem, key, '__DELETED__', decode_responses = False) == 1
 
     def __str__(self):
         '''Return this object as a string for testing purposes.'''
