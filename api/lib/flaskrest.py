@@ -47,7 +47,11 @@ def make_blueprint(cls):
     def read_obj(id):
         '''Read an object by id'''
 
-        return repr(cls(id))
+        obj = cls(id)
+        if not obj:
+            flask.abort(status.HTTP_404_NOT_FOUND, str(obj) + ' does not exist')
+
+        return repr(obj)
 
     @api.route('', methods = ['POST'])
     @renamed('update_' + name)
