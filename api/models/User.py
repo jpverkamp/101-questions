@@ -16,8 +16,8 @@ class User(lib.RedisObject):
 
         cls.lists = {
             'friends': models.User,
-            'pendingFriends': models.User,
-            'questionSets': models.QuestionSet
+            'pending-friends': models.User,
+            'questionsets': models.QuestionSet
         }
 
     def __init__(self, id = None, email = None, **kwargs):
@@ -25,6 +25,10 @@ class User(lib.RedisObject):
         # Use either id or email if specified, error if both
         if id and email:
             raise Exception('Do not specify both id and email for a user, they are the same thing')
+
+        # If 'me' is specified as the user, get the current user and use that
+        if id == 'me' or email == 'me':
+            id = lib.utils.current_user()['email']
 
         lib.RedisObject.__init__(self, id = (id if id else email), **kwargs)
 

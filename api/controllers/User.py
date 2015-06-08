@@ -11,12 +11,6 @@ from lib import make_blueprint
 
 user_api = make_blueprint(models.User)
 
-@user_api.route('/me', methods = ['GET'])
-def get_current_user():
-    '''Get the current user if logged in'''
-
-    return repr(current_user())
-
 @user_api.route('/login', methods = ['POST'])
 def login():
     '''Login a user'''
