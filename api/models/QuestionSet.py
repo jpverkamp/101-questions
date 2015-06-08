@@ -1,18 +1,16 @@
-from lib import RedisObject
-
+import lib
 import models
 
-class QuestionSet(RedisObject):
+class QuestionSet(lib.RedisObject):
     '''A list of questions that are or have been sent.'''
 
     @classmethod
     def classinit(cls):
         cls.fields = {
-            'owner': models.User,
             'title': str,
-            'startDate': str,
+            'start-date': str,
             'frequency': str,
-            'currentQuestion': int,
+            'current-question': int,
         }
 
         cls.lists = {
