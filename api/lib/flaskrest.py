@@ -113,6 +113,18 @@ def make_blueprint(cls):
 
                 return json.dumps(True)
 
+
+            @api.route('/<id>/' + url_subname, methods = ['GET'], defaults = {'lo': 0, 'hi': 10})
+            @api.route('/<id>/' + url_subname + '/<int:lo>-<int:hi>', methods = ['GET'])
+            @renamed('list_' + url_subname + '_from_' + name)
+            def list_from_list(id, lo, hi):
+
+                obj = cls(id)
+                subobjs = [lists[subname](subid) for subid in obj.lrange(subname, lo, hi)]
+
+                # TODO: This is ugly, but I think it works?
+                return ('[\n' +  ',\n'.join(map(repr, subobjs)) + ']')
+
             @api.route('/<id>/' + url_subname + '/<int:index>', methods = ['DELETE'])
             @renamed('delete_' + url_subname + '_from_' + name)
             def remove_from_list(id, index):
