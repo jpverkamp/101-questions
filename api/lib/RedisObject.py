@@ -22,11 +22,6 @@ class RedisObject(object):
         self.redis = redis.StrictRedis(host = 'redis', decode_responses = True)
         self.id = id or base64.urlsafe_b64encode(os.urandom(9)).decode('utf-8')
 
-        # IDs may contain class name
-        # TODO: Figure this part out
-        # if ':' in self.id and self.id.split(':')[0] == self.__class__.__name__:
-        #     self.id = self.id.split(':', 1)[1]
-
         for k, v in kwargs.items():
             if isinstance(v, list):
                 self.rpush(self, k, v)
@@ -150,13 +145,23 @@ class RedisObject(object):
         return self._redisListWrapper(self.redis.lrange, key, lo, hi)
 
     def lpush(self, key, val):
-        return self._redisListWrapper(self.redis.lpush, key, val, decode_responses = False)
+        return self._redisListWrapper(
+            self.redis.lpush,
+            key,
+            val.id if isinstance(val, RedisObject) else val,
+            decode_responses = False
+        )
 
     def lpop(self, key):
         return self._redisListWrapper(self.redis.lpop, key)
 
     def rpush(self, key, val):
-        return self._redisListWrapper(self.redis.rpush, key, val, decode_responses = False)
+        return self._redisListWrapper(
+            self.redis.rpush,
+            key,
+            val.id if isinstance(val, RedisObject) else val,
+            decode_responses = False
+        )
 
     def rpop(self, key):
         return self._redisListWrapper(self.redis.rpop, key)
@@ -168,7 +173,13 @@ class RedisObject(object):
         return self._redisListWrapper(self.redis.lindex, key, index)
 
     def set(self, key, index, val):
-        return self._redisListWrapper(self.redis.lset, key, index, val)
+        return self._redisListWrapper(
+            self.redis.lset,
+            key,
+            index,
+            val.id if isinstance(val, RedisObject) else val,
+            decode_responses = False
+        )
 
     def remove(self, key, index):
         self.set(key, index, '__DELETED__')
