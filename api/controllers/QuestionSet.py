@@ -16,11 +16,11 @@ questionset_api = make_blueprint(models.QuestionSet)
 
 # --- global ---
 
-@questionset_api.route('/', methods = ['GET'])
+@questionset_api.route('', methods = ['GET'])
 @logged_in
 def list_questionsets_for_user():
     '''Get a list of all questionsets for a user'''
 
     # TODO: Paginate
 
-    return json.dumps(current_user()['questionSets'])
+    return json.dumps(current_user()['questionsets'])
