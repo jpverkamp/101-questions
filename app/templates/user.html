@@ -1,1 +1,36 @@
-Name: {{name}}
+Hello {{name}} (<a href="mailto:{{email}}">{{email}}</a>)!
+
+<h3>Friends</h3>
+<ul>
+{{#each lists.friends.items}}
+    <li>{{this.name}}</li>
+{{else}}
+    <li>No friends, sorry</li>
+{{/each}}
+</ul>
+
+<h3>Question Sets</h3>
+<ul>
+{{#each lists.questionsets.items}}
+    <li><a href="/questionset/{{this.id}}">{{this.title}}</a></li>
+{{else}}
+    <li>No question sets... yet!</li>
+{{/each}}
+</ul>
+
+<form id="create-questionset">
+    <h3>Create a new question set:</h3>
+    <div class="form-group">
+        <label for="title">Title</label>
+        <input name="title" class="form-control" value="" />
+    </div>
+    <div class="form-group">
+        <label for="start-date">Start date</label>
+        <input name="start-date" class="form-control" value="" />
+    </div>
+    <div class="form-group">
+        <label for="frequency">Frequency</label>
+        <input name="frequency" class="form-control" value="" />
+    </div>
+    <input type="submit" value="Create" />
+</form>

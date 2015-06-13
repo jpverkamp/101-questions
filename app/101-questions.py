@@ -1,18 +1,13 @@
 #!/usr/bin/env python3
 
-# DEBUG
-import redis
-r = redis.StrictRedis(host = 'redis')
-r.flushall()
-# /DEBUG
-
 import flask
 import os
 import sys
 
 app = flask.Flask(__name__)
 app.debug = True
-app.secret_key = os.urandom(24)
+#app.secret_key = os.urandom(24)
+app.secret_key = '\0' * 24 # DEBUG
 
 import controllers
 app.register_blueprint(controllers.user_api)
