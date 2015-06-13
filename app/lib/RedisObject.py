@@ -193,29 +193,30 @@ class RedisObject(object):
             id = self.id
         )
 
-    def __repr__(self):
-        '''Return a json string representing this RedisObject'''
+    def __iter__(self):
+        '''Iterate, returning key value pairs.'''
 
         fields = getattr(self.__class__, 'fields', {})
         lists = getattr(self.__class__, 'lists', {})
 
-        d = {
-            field : self[field]
-            for field in fields
-        }
+        yield ('id', self.id)
 
-        # Only fetch the first ten items for each sublist
-        # TODO: Paramaterize the 'ten'?
+        for field in fields:
+            yield (field, self[field])
 
         if lists:
-            d['lists'] = {
+            yield ('lists', {
                 list: {
-                    'count': self.length(list),
+                    'count': len(self[list]),
                     'items': [
-                        item.id if issubclass(lists[list], RedisObject) else item
+                        dict(item) if isinstance(item, RedisObject) else item
                         for item in self.lrange(list, 0, 10)
                     ]
                 } for list in lists
-            }
 
-        return json.dumps(d, indent = True, sort_keys = True, default = str)
+            })
+
+    def __repr__(self):
+        '''Return a json string representing this RedisObject'''
+
+        return json.dumps(dict(self), indent = True, sort_keys = True, default = str)
