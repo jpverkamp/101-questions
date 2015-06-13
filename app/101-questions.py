@@ -17,6 +17,7 @@ app.secret_key = os.urandom(24)
 import controllers
 app.register_blueprint(controllers.user_api)
 app.register_blueprint(controllers.questionset_api)
+app.register_blueprint(controllers.ui_api)
 
 if __name__ == '__main__':
     app.run(host = '0.0.0.0', port = 8001)

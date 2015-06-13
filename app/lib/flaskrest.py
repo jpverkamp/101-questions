@@ -30,7 +30,7 @@ def make_blueprint(cls):
         }
 
         obj = cls(**params)
-        return obj.id
+        return json.dumps(obj.id)
 
     @api.route('/<id>', methods = ['DELETE'])
     @renamed('delete_' + name)

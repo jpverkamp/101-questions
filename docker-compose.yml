@@ -3,7 +3,7 @@ app:
     links:
         - redis
     ports:
-        - 8001:8001
+        - 80:8001
     env_file:
         - ./configs/email.env
 
