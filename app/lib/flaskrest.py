@@ -106,12 +106,13 @@ def make_blueprint(cls):
                 else:
                     subobj = lists[subname](flask.request.form['value'])
 
-                if not subobj:
-                    flask.abort(status.HTTP_404_NOT_FOUND, str(subobj) + ' does not exist')
 
                 obj.rpush(subname, subobj)
 
-                return json.dumps(True)
+                if issubclass(lists[subname], RedisObject):
+                    return json.dumps(subobj.id)
+                else:
+                    return json.dumps(True)
 
 
             @api.route('/<id>/' + url_subname, methods = ['GET'], defaults = {'lo': 0, 'hi': 10})
@@ -143,7 +144,7 @@ def make_blueprint(cls):
 
             @api.route('/<id>/' + url_subname + '/<int:index>', methods = ['POST'])
             @renamed('update_' + url_subname + '_in_' + name)
-            def update_in_list(id):
+            def update_in_list(id, index):
                 '''
                 Update a subobject of this object
 
@@ -156,16 +157,15 @@ def make_blueprint(cls):
 
                 # For RedisObject lists
                 if issubclass(lists[subname], RedisObject):
-                    subfields = getattr(lists[subname], 'fields', {})
-
-                    for field in subfields:
+                    subobj = obj.index(subname, index)
+                    for field in getattr(lists[subname], 'fields', {}):
                         if field in flask.request.form:
-                            obj['subfield'] = subfields[field](flask.request.form[field])
+                            subobj[field] = flask.fequest.form[field]
 
                 # For non-RedisObject lists
                 else:
                     value = lists[subname](flask.request.form['value'])
-                    obj['field'] = value
+                    obj.set(subname, index, value)
 
                 return json.dumps(True)
 

@@ -9,6 +9,7 @@ if (window.location.pathname.length > 1) {
         success: function(data) {
             $("#content").html(template(data));
             $("#content .editable").each(makeEditable);
+            $("#content .new").click(addToList);
         },
         error: function(err) {
             window.location.assign('/');
