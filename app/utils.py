@@ -1,8 +1,6 @@
 import flask
 import functools
 
-from flask.ext.api import status
-
 import models
 
 def logged_in(f):
@@ -12,11 +10,11 @@ def logged_in(f):
     def new_f(*args, **kwargs):
         # There is no user logged in
         if not 'id' in flask.session:
-            flask.abort(status.HTTP_401_UNAUTHORIZED, 'Not logged in')
+            flask.abort(401, 'Not logged in')
 
         # There is a user logged in, but they do not exist
         if not models.User(flask.session['id']):
-            flask.abort(status.HTTP_404_NOT_FOUND, 'Logged in user not found')
+            flask.abort(404, 'Logged in user not found')
 
         return f(*args, **kwargs)
 

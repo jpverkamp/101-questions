@@ -2,14 +2,19 @@ import bcrypt
 import flask
 import json
 
-from flask.ext.api import status
-
 import models
 
-from lib.utils import *
-from lib import make_blueprint
+from utils import *
+from controllers.flaskrest import make_blueprint
 
-user_api = make_blueprint(models.User)
+user_api = make_blueprint(
+    models.User,
+    lists = {
+        'friends': models.User,
+        'questionsets': models.QuestionSet
+    }
+)
+
 
 @user_api.route('/login', methods = ['POST'])
 def login():
@@ -21,10 +26,10 @@ def login():
     user = models.User(id)
 
     if not user:
-        flask.abort(status.HTTP_404_NOT_FOUND, 'User not found')
+        flask.abort(404, 'User not found')
 
     if not user.verifyPassword(password):
-        flask.abort(status.HTTP_403_FORBIDDEN, 'Invalid password')
+        flask.abort(403, 'Invalid password')
 
     flask.session['id'] = user['id']
 

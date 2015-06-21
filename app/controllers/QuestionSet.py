@@ -5,14 +5,18 @@ import json
 import os
 import random
 
-from flask.ext.api import status
+import controllers
 
-import models
+from utils import *
+from controllers.flaskrest import make_blueprint
 
-from lib.utils import *
-from lib import make_blueprint
-
-questionset_api = make_blueprint(models.QuestionSet)
+questionset_api = make_blueprint(
+    models.QuestionSet,
+    lists = {
+        'recipients': models.User,
+        'questions': str
+    }
+)
 
 # --- global ---
 

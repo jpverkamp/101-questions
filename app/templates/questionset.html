@@ -16,7 +16,7 @@
     <h3>Recipients</h2>
     <div id="viewEmails">
         <ul>
-        {{#each lists.recipients.items}}
+        {{#each recipients}}
             <li>
                 <span class="item">{{this}}</span>
                 <a href="#" class="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
@@ -33,7 +33,7 @@
     <h3>Questions</h2>
     <div id="viewQuestions">
         <ol>
-        {{#each lists.questions.items}}
+        {{#each questions}}
             <li>
                 <span class="item editable" data-field="Question" data-url="/api/questionset/{{../id}}/questions/{{@index}}">{{this}}</span>
                 <a href="#" class="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>

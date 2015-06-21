@@ -1,8 +1,6 @@
 import flask
 import os
 
-from flask.ext.api import status
-
 ui_api = flask.Blueprint('ui_api', __name__)
 
 templates = {}
@@ -26,7 +24,7 @@ for template in os.listdir('templates'):
 def render(controller, id):
 
     if not controller in templates:
-        flask.abort(status.HTTP_404_NOT_FOUND, 'Template not found for {controller}'.format(controller = controller))
+        flask.abort(404, 'Template not found for {controller}'.format(controller = controller))
 
     return templates[controller]
 

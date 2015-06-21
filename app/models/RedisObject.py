@@ -41,8 +41,13 @@ class RedisObject(object):
 
     def __repr__(self):
         '''TODO: FIX'''
-        
+
         return str(self)
+
+    def delete(self):
+        '''Delete this object from redis'''
+
+        self.redis.delete(self.id)
 
     @staticmethod
     def decode_value(type, value):

@@ -35,6 +35,9 @@ class RedisDict(RedisObject):
         Keys that have not been set (either in defaults or __setitem__) will return the default for their type (if set)
         '''
 
+        if key == 'id':
+            return self.id
+
         if not key in self.fields:
             raise KeyError('{} not found in {}'.format(key, self))
 
@@ -55,6 +58,8 @@ class RedisDict(RedisObject):
 
     def __iter__(self):
         '''Return (key, val) pairs for all values stored in this RedisDict.'''
+
+        yield ('id', self.id.rsplit(':', 1)[-1])
 
         for key in self.fields:
             yield (key, self[key])

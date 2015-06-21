@@ -11,7 +11,7 @@ Hello {{name}} (<a href="mailto:{{email}}">{{email}}</a>)!
 
 <h3>Question Sets</h3>
 <ul>
-{{#each lists.questionsets.items}}
+{{#each questionsets}}
     <li><a href="/questionset/{{this.id}}">{{this.title}}</a></li>
 {{else}}
     <li>No question sets... yet!</li>

@@ -67,7 +67,13 @@ class RedisList(RedisObject):
         '''Delete an item from a RedisList by index. (warning: this is O(n))'''
 
         self.redis.lset(self.id, index, '__DELETED__')
-        self.redis.lrem(self.id, '__DELETED__', 1)
+        self.redis.lrem(self.id, 1, '__DELETED__')
+
+    def __iter__(self):
+        '''Iterate over all items in this list.'''
+
+        for el in self.redis.lrange(self.id, 0, -1):
+            yield RedisObject.decode_value(self.item_type, el)
 
     def lpop(self):
         '''Remove and return a value from the left (low) end of the list.'''
@@ -88,3 +94,6 @@ class RedisList(RedisObject):
         '''Add an item to the right (high) end of the list.'''
 
         self.redis.rpush(self.id, RedisObject.encode_value(val))
+
+    def append(self, val):        
+        self.rpush(val)
