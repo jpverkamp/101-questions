@@ -1,13 +1,3 @@
-web:
-    build: .
-    links:
-    - redis
-    ports:
-    - "10177:10177"
-    env_file:
-    - "./env.conf"
-
-redis:
-    image: redis
-    volumes:
-    - data:/data
+app:
+    build: app
+    
