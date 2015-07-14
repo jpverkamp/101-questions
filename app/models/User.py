@@ -1,9 +1,10 @@
 import bcrypt
 
+import lib
 import models
 import utils
 
-class User(models.RedisDict):
+class User(lib.RedisDict):
     '''A user. Duh.'''
 
     def __init__(self, id = None, email = None, **defaults):
@@ -20,15 +21,16 @@ class User(models.RedisDict):
         id = id if id else email
         defaults['email'] = id
 
-        models.RedisDict.__init__(
+        lib.RedisDict.__init__(
             self,
             id = (id if id else email),
             fields = {
                 'name': str,
                 'email': str,
                 'password': str,
-                'friends': models.RedisList.as_child(self, 'friends', models.User),
-                'questionsets': models.RedisList.as_child(self, 'questionsets', models.QuestionSet),
+                'friends': lib.RedisList.as_child(self, 'friends', models.User),
+                'campaigns': lib.RedisList.as_child(self, 'campaigns', models.Campaign),
+                'questionsets': lib.RedisList.as_child(self, 'questionsets', models.QuestionSet),
             },
             defaults = defaults
         )
@@ -42,7 +44,7 @@ class User(models.RedisDict):
                 bcrypt.gensalt()
             ).decode('utf-8')
 
-        models.RedisDict.__setitem__(self, key, val)
+        lib.RedisDict.__setitem__(self, key, val)
 
     def verifyPassword(self, testPassword):
         '''Verify if a given password is correct'''

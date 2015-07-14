@@ -1,7 +1,7 @@
 import json
 import redis
 
-from models.RedisObject import RedisObject
+from lib.RedisObject import RedisObject
 
 class RedisList(RedisObject):
     '''An equivalent to list where all items are stored in Redis.'''

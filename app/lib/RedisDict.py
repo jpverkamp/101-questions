@@ -1,7 +1,7 @@
 import json
 import redis
 
-from models.RedisObject import RedisObject
+from lib.RedisObject import RedisObject
 
 class RedisDict(RedisObject):
     '''An equivalent to dict where all keys/values are stored in Redis.'''
