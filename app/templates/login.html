@@ -1,4 +1,6 @@
-<form id="login">
+{% extends "base.html" %}
+{% block body %}
+<form id="login" method="post" action="{{ url_for('login') }}">
     <h3>Login:</h3>
     <div class="form-group">
         <label for="email">Email</label>
@@ -11,7 +13,7 @@
     <input type="submit" value="Login" />
 </form>
 
-<form id="register">
+<form id="register" method="post" action="{{ url_for('register') }}">
     <h3>Create user:</h3>
     <div class="form-group">
         <label for="name">Name</label>
@@ -27,3 +29,4 @@
     </div>
     <input type="submit" value="Register" />
 </form>
+{% endblock %}

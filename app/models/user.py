@@ -19,7 +19,8 @@ class User(lib.RedisDict):
 
         # Set id and email to the same value
         id = id if id else email
-        defaults['email'] = id
+        if defaults:
+            defaults['email'] = id
 
         lib.RedisDict.__init__(
             self,
@@ -34,6 +35,12 @@ class User(lib.RedisDict):
             },
             defaults = defaults
         )
+
+    def __bool__(self):
+        '''Must have name set, not just email'''
+
+        return lib.RedisDict.__bool__(self) and bool(self['name'])
+
 
     def __setitem__(self, key, val):
         '''Override the behavior if user is trying to change the password'''

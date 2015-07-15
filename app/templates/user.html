@@ -1,36 +1,16 @@
-Hello {{name}} (<a href="mailto:{{email}}">{{email}}</a>)!
+{% extends "base.html" %}
+{% block body %}
+Hello {{ user['name'] }} (<a href="mailto:{{ user['email'] }}">{{ user['email'] }}</a>)!
 
 <h3>Friends</h3>
 <ul>
-{{#each lists.friends.items}}
-    <li>{{this.name}}</li>
-{{else}}
-    <li>No friends, sorry</li>
-{{/each}}
+    {% if user['friends'] %}
+    {% for friend in user['friends'] %}
+    <li><a href="{{ url_for('user', email = friend['email']) }}">{{ friend['name'] }}</a></li>
+    {% endfor %}
+    {% else %}
+    <li>No friends yet. Sorry!</li>
+    {% endif %}
 </ul>
 
-<h3>Question Sets</h3>
-<ul>
-{{#each questionsets}}
-    <li><a href="/questionset/{{this.id}}">{{this.title}}</a></li>
-{{else}}
-    <li>No question sets... yet!</li>
-{{/each}}
-</ul>
-
-<form id="create-questionset">
-    <h3>Create a new question set:</h3>
-    <div class="form-group">
-        <label for="title">Title</label>
-        <input name="title" class="form-control" value="" />
-    </div>
-    <div class="form-group">
-        <label for="start-date">Start date</label>
-        <input name="start-date" class="form-control" value="" />
-    </div>
-    <div class="form-group">
-        <label for="frequency">Frequency</label>
-        <input name="frequency" class="form-control" value="" />
-    </div>
-    <input type="submit" value="Create" />
-</form>
+{% endblock %}

@@ -1,14 +1,16 @@
+{% extends "base.html" %}
+{% block body %}
 <div>
     <h3>Title</h2>
     <div id="viewTitle">
-        <span class="item">{{title}}</span>
+        <span class="item">{{ title }}</span>
     </div>
 </div>
 
 <div>
     <h3>Frequency</h2>
     <div id="viewFrequency">
-        <span class="item">{{frequency}}</span>
+        <span class="item">{{ frequency }}</span>
     </div>
 </div>
 
@@ -16,12 +18,12 @@
     <h3>Recipients</h2>
     <div id="viewEmails">
         <ul>
-        {{#each recipients}}
+        {{ #each recipients }}
             <li>
-                <span class="item">{{this}}</span>
+                <span class="item">{{ this }}</span>
                 <a href="#" class="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
             </li>
-        {{/each}}
+        {{/each }}
             <li>
                     [ <a href="#" class="new">Add</a> ]
             </li>
@@ -33,17 +35,18 @@
     <h3>Questions</h2>
     <div id="viewQuestions">
         <ol>
-        {{#each questions}}
+        {{ #each questions }}
             <li>
-                <span class="item editable" data-field="Question" data-url="/api/questionset/{{../id}}/questions/{{@index}}">{{this}}</span>
+                <span class="item editable" data-field="Question" data-url="/api/questionset/{{../id }}/questions/{{@index }}">{{ this }}</span>
                 <a href="#" class="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
                 <a href="#" class="send" style="display: none;"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></a>
             </li>
-        {{/each}}
+        {{/each }}
             <li>
-                    [ <a href="#" class="new" data-field="Question" data-url="/api/questionset/{{id}}/questions">Add</a> ]
+                    [ <a href="#" class="new" data-field="Question" data-url="/api/questionset/{{ id }}/questions">Add</a> ]
                     [ <a href="#" class="import">Import</a> ]
             </li>
         </ol>
     </div>
 </div>
+{% endblock %}

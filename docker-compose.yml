@@ -4,8 +4,6 @@ app:
         - redis
     ports:
         - 80:8001
-    #env_file:
-    #    - ./configs/email.env
 
 redis:
     image: redis
