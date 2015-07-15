@@ -1,5 +1,5 @@
 
-from models.Campaign import Campaign
-from models.Message import Message
-from models.QuestionSet import QuestionSet
-from models.User import User
+from models.campaign import Campaign
+from models.message import Message
+from models.questionset import QuestionSet
+from models.user import User
