@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% block body %}
-Hello {{ user['name'] }} (<a href="mailto:{{ user['email'] }}">{{ user['email'] }}</a>)!
 
 <h3>Friends</h3>
 <ul>
@@ -12,5 +11,28 @@ Hello {{ user['name'] }} (<a href="mailto:{{ user['email'] }}">{{ user['email'] 
     <li>No friends yet. Sorry!</li>
     {% endif %}
 </ul>
+
+<h3>Question Sets</h3>
+<ul>
+{% if user['questionsets'] %}
+    {% for questionset in user['questionsets'] %}
+    <li><a href="{{ url_for('get_questionset', id = questionset['id']) }}">{{ questionset['title'] }}</a></li>
+    {% endfor %}
+    <li>
+        <form method="post" action="{{ url_for('create_questionset') }}">
+            <input type="submit" class="submitLink" value="Create a new questionset" />
+        </form>
+    </li>
+    {% else %}
+    <li>
+        No question sets yet. Why don't you
+        <form method="post" action="{{ url_for('create_questionset') }}">
+            <input type="submit" class="submitLink" value="Create a new questionset" />
+        </form>
+        ?
+    </li>
+{% endif %}
+</ul>
+
 
 {% endblock %}
