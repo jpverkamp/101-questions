@@ -45,3 +45,35 @@ def register(app):
         qs = models.QuestionSet(id)
         qs['questions'][index] = flask.request.form['value']
         return json.dumps(True)
+
+    @app.route('/questionset/<id>/questions/import', methods = ['GET'])
+    @lib.authenticated
+    def display_questionset_import(id):
+
+        qs = models.QuestionSet(id)
+        return flask.render_template(
+            'import.html',
+            redirect = '/questionset/{id}'.format(id = id),
+            action = '/questionset/{id}/questions/import'.format(id = id),
+            type = 'Question Set "{title}"'.format(title = qs['title'])
+        )
+
+    @app.route('/questionset/<id>/questions/import', methods = ['POST'])
+    @lib.authenticated
+    def questionset_import(id):
+
+        qs = models.QuestionSet(id)
+
+        raw_values = flask.request.form['values']
+        try:
+            values = json.loads(raw_values)
+        except:
+            values = raw_values.split('\n')
+
+        for value in values:
+            qs['questions'].append(value)
+
+        if 'redirect' in flask.request.form and flask.request.form['redirect']:
+            return flask.redirect(flask.request.form['redirect'])
+        else:
+            return flask.redirect('/')
