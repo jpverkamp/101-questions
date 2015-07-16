@@ -15,13 +15,13 @@
         <ol>
             {% for question in questionset['questions'] %}
             <li>
-                <span class="item editable" data-field="Question" data-url="/api/questionset/{{ questionset['id'] }}/questions/{{ loop.index }}">{{ question }}</span>
+                <span class="item editable" data-field="Question" data-url="/questionset/{{ questionset['id'] }}/questions/{{ loop.index0 }}">{{ question }}</span>
                 <a href="#" class="delete"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
                 <a href="#" class="send" style="display: none;"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></a>
             </li>
             {% endfor %}
             <li>
-                    [ <a href="#" class="new" data-field="Question" data-url="/api/questionset/{{ questionset['id'] }}/questions">Add</a> ]
+                    [ <a class="postit" href="/questionset/{{ questionset['id'] }}/questions">Add</a> ]
                     [ <a href="#" class="import">Import</a> ]
             </li>
         </ol>
