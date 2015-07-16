@@ -1,16 +1,17 @@
 $(function() {
-    $('.postit').click(function(evt) {
-        evt.preventDefault();
+    var alternateMethod = function(method) {
+        return function(evt) {
+            evt.preventDefault();
 
-        g = evt;
-        console.log(evt.target.href);
+            console.log(evt);
+            console.log(method + ' ' + evt.currentTarget.href);
 
-        $.ajax({
-            type: 'POST',
-            url: evt.target.href,
-            success: function() { location.reload() }
-        });
-    });
+            $.ajax({ type: method, url: evt.currentTarget.href, success: function() { location.reload() } });
+        };
+    };
+
+    $('.as-delete').click(alternateMethod('delete'));
+    $('.as-post').click(alternateMethod('post'));
 
     $('.editable').each(function(i, el) {
         var field = $(el).attr('data-field');

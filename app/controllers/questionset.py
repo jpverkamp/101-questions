@@ -46,6 +46,14 @@ def register(app):
         qs['questions'][index] = flask.request.form['value']
         return json.dumps(True)
 
+    @app.route('/questionset/<id>/questions/<int:index>', methods = ['DELETE'])
+    @lib.authenticated
+    def delete_question_from_questionset(id, index):
+
+        qs = models.QuestionSet(id)
+        del qs['questions'][index]
+        return json.dumps(True)
+
     @app.route('/questionset/<id>/questions/import', methods = ['GET'])
     @lib.authenticated
     def display_questionset_import(id):
