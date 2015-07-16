@@ -19,17 +19,11 @@
     <li><a href="{{ url_for('get_questionset', id = questionset['id']) }}">{% if questionset['title'] %}{{ questionset['title'] }}{% else %}(untitled){% endif %}</a></li>
     {% endfor %}
     <li>
-        <form method="post" action="{{ url_for('create_questionset') }}">
-            <input type="submit" class="submitLink" value="Create a new questionset" />
-        </form>
+        <a class="postit" href="{{ url_for('create_questionset') }}">Create a new questionset</a>
     </li>
     {% else %}
     <li>
-        No question sets yet. Why don't you
-        <form method="post" action="{{ url_for('create_questionset') }}">
-            <input type="submit" class="submitLink" value="Create a new questionset" />
-        </form>
-        ?
+        No question sets yet. Why don't you <a class="postit" href="{{ url_for('create_questionset') }}">create one</a>?
     </li>
 {% endif %}
 </ul>
