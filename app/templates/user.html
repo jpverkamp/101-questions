@@ -16,7 +16,7 @@
 <ul>
 {% if user['questionsets'] %}
     {% for questionset in user['questionsets'] %}
-    <li><a href="{{ url_for('get_questionset', id = questionset['id']) }}">{{ questionset['title'] }}</a></li>
+    <li><a href="{{ url_for('get_questionset', id = questionset['id']) }}">{% if questionset['title'] %}{{ questionset['title'] }}{% else %}(untitled){% endif %}</a></li>
     {% endfor %}
     <li>
         <form method="post" action="{{ url_for('create_questionset') }}">

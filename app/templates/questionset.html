@@ -3,7 +3,9 @@
 <div>
     <h3>Title</h2>
     <div id="viewTitle">
-        <span class="item editable">{{ questionset['title'] }}</span>
+        <span class="item editable" data-title="title" data-url="/questionset/{{ questionset['id'] }}/title">
+            {{ questionset['title'] }}
+        </span>
     </div>
 </div>
 

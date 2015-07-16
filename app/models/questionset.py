@@ -10,6 +10,7 @@ class QuestionSet(lib.RedisDict):
             self,
             id = id,
             fields = {
+                'title': str,
                 'questions': lib.RedisList.as_child(self, 'questions', str),
             },
             defaults = defaults
