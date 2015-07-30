@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block body %}
+<div>
+    <h3>Title</h2>
+    <div id="viewTitle">
+        <span class="item editable" data-title="title" data-url="/campaign/{{ campaign['id'] }}/title">
+            {{ campaign['title'] }}
+        </span>
+    </div>
+</div>
+{% endblock %}

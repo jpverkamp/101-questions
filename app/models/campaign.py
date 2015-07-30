@@ -10,6 +10,7 @@ class Campaign(lib.RedisDict):
             self,
             id = id,
             fields = {
+                'title': str,
                 'targets': lib.RedisList.as_child(self, 'targets', models.User),
                 'start-date': str,
                 'frequency': str,
