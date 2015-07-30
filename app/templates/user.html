@@ -19,7 +19,7 @@
     <li><a href="{{ url_for('get_questionset', id = questionset['id']) }}">{% if questionset['title'] %}{{ questionset['title'] }}{% else %}(untitled){% endif %}</a></li>
     {% endfor %}
     <li>
-        <a class="as-post" href="{{ url_for('create_questionset') }}">Create a new questionset</a>
+        [ <a class="as-post" href="{{ url_for('create_questionset') }}">Create a new questionset</a> ]
     </li>
     {% else %}
     <li>
