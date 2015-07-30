@@ -1,11 +1,39 @@
 {% extends "base.html" %}
 {% block body %}
-<div>
-    <h3>Title</h2>
-    <div id="viewTitle">
-        <span class="item editable" data-title="title" data-url="/campaign/{{ campaign['id'] }}/title">
-            {{ campaign['title'] }}
-        </span>
-    </div>
+<h3>Title</h2>
+<div id="viewTitle">
+    <span class="item editable" data-title="title" data-url="/campaign/{{ campaign['id'] }}/title">
+        {{ campaign['title'] }}
+    </span>
+</div>
+
+<h3>Targets</h2>
+<div id="viewTargets">
+    <ol>
+        {% for target in campaign['targets'] %}
+        <li>
+            <span class="item editable" data-field="Question" data-url="/campaign/{{ campaign['id'] }}/targets/{{ loop.index0 }}">{{ target['name'] }}</span>
+            <a class="as-delete" href="/campaign/{{ campaign['id'] }}/targets/{{ loop.index0 }}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+            <a href="#" class="send" style="display: none;"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></a>
+        </li>
+        {% endfor %}
+        <li>
+                [ <a class="as-post" href="/campaign/{{ campaign['id'] }}/targets">Add</a> ]
+        </li>
+    </ol>
+</div>
+
+<h3>Start Date</h2>
+<div id="viewStartDate">
+    <span class="item editable" data-title="start-date" data-url="/campaign/{{ campaign['id'] }}/start-date">
+        {{ campaign['start-date'] }}
+    </span>
+</div>
+
+<h3>Frequency</h2>
+<div id="viewFrequency">
+    <span class="item editable" data-title="frequency" data-url="/campaign/{{ campaign['id'] }}/frequency">
+        {{ campaign['frequency'] }}
+    </span>
 </div>
 {% endblock %}

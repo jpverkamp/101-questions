@@ -22,10 +22,13 @@ def register(app):
 
         return get_campaign(c.id)
 
-    @app.route('/campaign/<id>/title', methods = ['POST'])
+    @app.route('/campaign/<id>/<field>', methods = ['POST'])
     @lib.authenticated
-    def update_campaign(id):
+    def update_campaign(id, field):
 
-        qs = models.QuestionSet(id)
-        qs['title'] = flask.request.form['value']
+        if not field in ['title', 'start-date', 'frequency']:
+            raise Exception('Unknown field: {}'.format(field))
+
+        c = models.Campaign(id)
+        c[field] = flask.request.form['value']
         return json.dumps(True)
