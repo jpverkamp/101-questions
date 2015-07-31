@@ -10,16 +10,18 @@
 <h3>Targets</h2>
 <div id="viewTargets">
     <ol>
-        {% for target in campaign['targets'] %}
         <li>
-            <span class="item editable" data-field="Question" data-url="/campaign/{{ campaign['id'] }}/targets/{{ loop.index0 }}">{{ target['name'] }}</span>
-            <a class="as-delete" href="/campaign/{{ campaign['id'] }}/targets/{{ loop.index0 }}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-            <a href="#" class="send" style="display: none;"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></a>
+            <input class="item toggleable" data-url="/campaign/{{ campaign['id'] }}/targets" type="checkbox" name="targets" value="{{ user['id'] }}" {% if user in campaign['targets'] %}checked{% endif %} />
+            {{ user['name'] }} ({{ user['email'] }})
+        </li>
+        {% for friend in user['friends'] %}
+        <li>
+            <li>
+                <input class="item toggleable" data-url="/campaign/{{ campaign['id'] }}/targets" type="checkbox" name="targets" value="{{ friend['id'] }}" {% if friend in campaign['targets'] %}checked{% endif %} />
+                {{ friend['name'] }} ({{ friend['email'] }})
+            </li>
         </li>
         {% endfor %}
-        <li>
-                [ <a class="as-post" href="/campaign/{{ campaign['id'] }}/targets">Add</a> ]
-        </li>
     </ol>
 </div>
 

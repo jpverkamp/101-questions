@@ -1,3 +1,4 @@
+
 $(function() {
     var alternateMethod = function(method) {
         return function(evt) {
@@ -25,4 +26,22 @@ $(function() {
             ajaxOptions: { type: 'POST' },
         });
     });
+
+    $('.toggleable').each(function(i, el) {
+        var url = $(el).attr('data-url');
+        var name = $(el).attr('name');
+        var value = $(el).attr('value');
+
+        $(this).click(function() {
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    name: name,
+                    value: value,
+                    state: $(el).is(':checked')
+                }
+            });
+        });
+    })
 });

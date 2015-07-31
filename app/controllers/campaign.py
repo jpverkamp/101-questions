@@ -9,18 +9,37 @@ def register(app):
     @lib.authenticated
     def get_campaign(id):
 
-        c = models.Campaign(id)
-        return flask.render_template('campaign.html', campaign = c)
+        user = lib.current_user()
+        campaign = models.Campaign(id)
+        return flask.render_template('campaign.html', user = user, campaign = campaign)
 
     @app.route('/campaign', methods = ['POST'])
     @lib.authenticated
     def create_campaign():
 
         user = lib.current_user()
-        c = models.Campaign()
-        user['campaigns'].append(c)
+        campaign = models.Campaign()
+        user['campaigns'].append(campaign)
 
-        return get_campaign(c.id)
+        return get_campaign(campaign.id)
+
+    @app.route('/campaign/<id>/targets', methods = ['POST'])
+    @lib.authenticated
+    def update_campaign_targets(id):
+
+        campaign = models.Campaign(id)
+        target = models.User(flask.request.form['value'])
+        state = json.loads(flask.request.form['state'])
+
+        if state:
+            campaign['targets'].append(target)
+        else:
+            for index, user in enumerate(campaign['targets']):
+                if user == target:
+                    del campaign['targets'][index]
+                    break
+
+        return json.dumps(True)
 
     @app.route('/campaign/<id>/<field>', methods = ['POST'])
     @lib.authenticated
@@ -29,6 +48,6 @@ def register(app):
         if not field in ['title', 'start-date', 'frequency']:
             raise Exception('Unknown field: {}'.format(field))
 
-        c = models.Campaign(id)
-        c[field] = flask.request.form['value']
+        campaign = models.Campaign(id)
+        campaign[field] = flask.request.form['value']
         return json.dumps(True)
