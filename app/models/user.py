@@ -30,7 +30,6 @@ class User(lib.RedisDict):
                 'email': str,
                 'password': str,
                 'friends': lib.RedisList.as_child(self, 'friends', models.User),
-                'campaigns': lib.RedisList.as_child(self, 'campaigns', models.Campaign),
                 'questionsets': lib.RedisList.as_child(self, 'questionsets', models.QuestionSet),
             },
             defaults = defaults

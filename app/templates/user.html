@@ -27,22 +27,4 @@
     </li>
 {% endif %}
 </ul>
-
-<h3>Campaigns</h3>
-<ul>
-{% if user['campaigns'] %}
-    {% for campaign in user['campaigns'] %}
-    <li><a href="{{ url_for('get_campaign', id = campaign['id']) }}">{% if campaign['title'] %}{{ campaign['title'] }}{% else %}(untitled){% endif %}</a></li>
-    {% endfor %}
-    <li>
-        [ <a class="as-post" href="{{ url_for('create_campaign') }}">Create a new campaign</a> ]
-    </li>
-    {% else %}
-    <li>
-        No campaigns yet. Why don't you <a class="as-post" href="{{ url_for('create_campaign') }}">create one</a>?
-    </li>
-{% endif %}
-</ul>
-
-
 {% endblock %}

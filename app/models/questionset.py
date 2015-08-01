@@ -11,6 +11,9 @@ class QuestionSet(lib.RedisDict):
             id = id,
             fields = {
                 'title': str,
+                'frequency': str,
+                'targets': lib.RedisList.as_child(self, 'targets', models.User),
+                'next-question': str,
                 'questions': lib.RedisList.as_child(self, 'questions', str),
             },
             defaults = defaults

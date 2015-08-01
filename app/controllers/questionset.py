@@ -9,8 +9,9 @@ def register(app):
     @lib.authenticated
     def get_questionset(id):
 
+        user = lib.current_user()
         qs = models.QuestionSet(id)
-        return flask.render_template('questionset.html', questionset = qs)
+        return flask.render_template('questionset.html', user = user, questionset = qs)
 
     @app.route('/questionset', methods = ['POST'])
     @lib.authenticated
@@ -22,12 +23,12 @@ def register(app):
 
         return get_questionset(qs.id)
 
-    @app.route('/questionset/<id>/title', methods = ['POST'])
+    @app.route('/questionset/<id>/<field>', methods = ['POST'])
     @lib.authenticated
-    def update_questionset(id):
+    def update_questionset(id, field):
 
         qs = models.QuestionSet(id)
-        qs['title'] = flask.request.form['value']
+        qs[field] = flask.request.form['value']
         return json.dumps(True)
 
     @app.route('/questionset/<id>/questions', methods = ['POST'])
@@ -36,6 +37,24 @@ def register(app):
 
         qs = models.QuestionSet(id)
         qs['questions'].append('')
+        return json.dumps(True)
+
+    @app.route('/questionset/<id>/targets', methods = ['POST'])
+    @lib.authenticated
+    def update_questionset_targets(id):
+
+        questionset = models.QuestionSet(id)
+        target = models.User(flask.request.form['value'])
+        state = json.loads(flask.request.form['state'])
+
+        if state:
+            questionset['targets'].append(target)
+        else:
+            for index, user in enumerate(questionset['targets']):
+                if user == target:
+                    del questionset['targets'][index]
+                    break
+
         return json.dumps(True)
 
     @app.route('/questionset/<id>/questions/<int:index>', methods = ['POST'])

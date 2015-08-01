@@ -9,6 +9,38 @@
     </div>
 </div>
 
+<h3>Frequency</h2>
+<div id="viewFrequency">
+    <span class="item editable" data-title="frequency" data-url="/questionset/{{ questionset['id'] }}/frequency">
+        {{ questionset['frequency'] }}
+    </span>
+</div>
+
+<h3>Next Question</h2>
+<div id="viewNextQuestion">
+    <span class="item editable" data-title="next-question" data-url="/questionset/{{ questionset['id'] }}/next-question">
+        {{ questionset['next-question'] }}
+    </span>
+</div>
+
+<h3>Targets</h2>
+<div id="viewTargets">
+    <ol>
+        <li>
+            <input class="item toggleable" data-url="/questionset/{{ questionset['id'] }}/targets" type="checkbox" name="targets" value="{{ user['id'] }}" {% if user in questionset['targets'] %}checked{% endif %} />
+            {{ user['name'] }} ({{ user['email'] }})
+        </li>
+        {% for friend in user['friends'] %}
+        <li>
+            <li>
+                <input class="item toggleable" data-url="/questionset/{{ questionset['id'] }}/targets" type="checkbox" name="targets" value="{{ friend['id'] }}" {% if friend in questionset['targets'] %}checked{% endif %} />
+                {{ friend['name'] }} ({{ friend['email'] }})
+            </li>
+        </li>
+        {% endfor %}
+    </ol>
+</div>
+
 <div>
     <h3>Questions</h2>
     <div id="viewQuestions">
