@@ -23,7 +23,6 @@ class RedisObject(object):
         if ':' not in self.id:
             self.id = self.__class__.__name__ + ':' + self.id
 
-
     def __bool__(self):
         '''Test if an object currently exists'''
 

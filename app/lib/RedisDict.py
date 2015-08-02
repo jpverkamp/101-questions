@@ -36,7 +36,7 @@ class RedisDict(RedisObject):
         '''
 
         if key == 'id':
-            return self.id
+            return self.id.split(':')[-1]
 
         if not key in self.fields:
             raise KeyError('{} not found in {}'.format(key, self))
