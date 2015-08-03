@@ -43,6 +43,16 @@ class RedisObject(object):
 
         return str(self)
 
+    @classmethod
+    def all(cls):
+        '''Iterate through all objects of the given class.'''
+
+        r = redis.StrictRedis(host = 'redis', decode_responses = True)
+
+        for key in r.keys(cls.__name__ + ':*'):
+            if key.count(':') == 1:
+                yield cls(key)
+
     def delete(self):
         '''Delete this object from redis'''
 
