@@ -62,7 +62,9 @@
             <li>
                 <span class="item editable" data-field="Question" data-url="/questionset/{{ questionset['id'] }}/questions/{{ loop.index0 }}">{{ question }}</span>
                 <a class="as-delete" href="/questionset/{{ questionset['id'] }}/questions/{{ loop.index0 }}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
-                <a href="#" class="send" style="display: none;"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></a>
+                {% if questionset['current-question'] == loop.index0 %}
+                <a href="#" class="send"><span class="glyphicon glyphicon-send"></span></a>
+                {% endif %}
             </li>
             {% endfor %}
             <li>
