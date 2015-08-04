@@ -23,10 +23,7 @@ def register(app):
 
             # Scan through all current questionsets
             for user in models.User.all():
-                print(user['name'])
                 for qs in user['questionsets']:
-                    print(qs['title'])
-
+                    if qs.shouldSendNext():
+                        qs.sendNext()
             sys.stdout.flush()
-
-            break
