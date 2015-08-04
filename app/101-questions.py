@@ -5,10 +5,15 @@ import os
 import signal
 import sys
 
-DEBUG_MODE = ('--debug' in sys.argv) or ('101QS_DEBUG' in os.environ)
-RELOAD_MODE = ('--reload' in sys.argv) or ('101QS_RELOAD' in os.environ)
-
 app = flask.Flask(__name__)
+
+DEBUG_MODE = ('--debug' in sys.argv) or ('101QS_DEBUG' in os.environ)
+if DEBUG_MODE: print('Running in DEBUG_MODE')
+
+RELOAD_MODE = ('--reload' in sys.argv) or ('101QS_RELOAD' in os.environ)
+if RELOAD_MODE: print('Running in RELOAD_MODE')
+
+sys.stdout.flush()
 
 # Use a terrible, consistent key for debug mode
 # In production mode, generate a new key on every deploy (will log everyone out)
