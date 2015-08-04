@@ -59,17 +59,17 @@ class QuestionSet(lib.RedisDict):
         self['current-question'] += 1
 
         now = datetime.datetime.now()
-        now = datetime.date(now.year, now.month, now.day)
+        today = datetime.date(now.year, now.month, now.day)
 
         frequency = self['frequency'].lower()
 
         if frequency == 'daily':
-            next_day += datetime.timedelta(days = 1)
+            next_day = today + datetime.timedelta(days = 1)
         elif frequency == 'weekly':
-            next_day += datetime.timedelta(weeks = 1)
+            next_day = today + datetime.timedelta(weeks = 1)
         else:
             print('Uknown frequency type "{}", defaulting to daily'.format(frequency))
-            next_day += datetime.timedelta(days = 1)
+            next_day = today + datetime.timedelta(days = 1)
 
         self['next-send-date'] = next_day.strftime('%Y-%m-%d')
 

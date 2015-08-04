@@ -5,7 +5,7 @@ import sys
 import threading
 import time
 
-HOURLY_OFFSET = 55
+HOURLY_OFFSET = 5
 
 def register(app):
 
