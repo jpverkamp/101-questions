@@ -14,6 +14,7 @@ class QuestionSet(lib.RedisDict):
                 'frequency': str,
                 'targets': lib.RedisList.as_child(self, 'targets', models.User),
                 'next-question': str,
+                'cron-hour': int,
                 'questions': lib.RedisList.as_child(self, 'questions', str),
             },
             defaults = defaults

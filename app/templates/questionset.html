@@ -23,6 +23,19 @@
     </span>
 </div>
 
+<h3>Question Hour (UTC)</h2>
+<div id="viewCronHour">
+    <select class="item selectable" name="cron-hour" data-url="/questionset/{{ questionset['id'] }}/cron-hour">
+        {% for i in range(24) %}
+        {% if i == questionset['cron-hour'] %}
+        <option value="{{ i }}" selected>{{ i }}</option>
+        {% else %}
+        <option value="{{ i }}">{{ i }}</option>
+        {% endif %}
+        {% endfor %}
+    </select>
+</div>
+
 <h3>Targets</h2>
 <div id="viewTargets">
     <ol>

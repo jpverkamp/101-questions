@@ -43,5 +43,21 @@ $(function() {
                 }
             });
         });
-    })
+    });
+
+    $('.selectable').each(function(i, el) {
+        var url = $(el).attr('data-url');
+        var name = $(el).attr('name');
+
+        $(this).change(function() {
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    name: name,
+                    value: $(el).val()
+                }
+            });
+        });
+    });
 });

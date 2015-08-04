@@ -57,6 +57,14 @@ def register(app):
 
         return json.dumps(True)
 
+    @app.route('/questionset/<id>/cron-hour', methods = ['POST'])
+    @lib.authenticated
+    def update_questionset_cron_hour(id):
+
+        qs = models.QuestionSet(id)
+        qs['cron-hour'] = int(flask.request.form['value'])
+        return json.dumps(True)
+
     @app.route('/questionset/<id>/questions/<int:index>', methods = ['POST'])
     @lib.authenticated
     def update_question_in_questionset(id, index):
