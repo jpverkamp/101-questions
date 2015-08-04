@@ -24,7 +24,7 @@ class QuestionSet(lib.RedisDict):
             defaults = defaults
         )
 
-    def shouldSendNext(self):
+    def should_send_next(self):
         '''Check if it's time to send the next question'''
 
         # If we've already sent all of the questions, we're done
@@ -47,8 +47,8 @@ class QuestionSet(lib.RedisDict):
         # All conditions pass, send it!
         return True
 
-    def sendNext(self):
-        '''Send the next question. Use shouldSendNext to check unless you want to force it.'''
+    def send_next(self):
+        '''Send the next question. Use should_send_next to check unless you want to force it.'''
 
         # TODO: Implement this
         print('Sending question {} from {}'.format(self['current-question'], self))
