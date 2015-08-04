@@ -81,6 +81,14 @@ def register(app):
         del qs['questions'][index]
         return json.dumps(True)
 
+    @app.route('/questionset/<id>/questions/send-next', methods = ['POST'])
+    @lib.authenticated
+    def send_next_question_from_questionset(id):
+
+        qs = models.QuestionSet(id)
+        qs.send_next()
+        return json.dumps(True)
+
     @app.route('/questionset/<id>/questions/import', methods = ['GET'])
     @lib.authenticated
     def display_questionset_import(id):
