@@ -5,6 +5,8 @@ import sys
 import threading
 import time
 
+HOURLY_OFFSET = 55
+
 def register(app):
 
     @lib.daemonize
@@ -13,10 +15,10 @@ def register(app):
         while True:
             # Sleep until five minutes past the hour
             now = datetime.datetime.now()
-            if now.minute == 5:
+            if now.minute == HOURLY_OFFSET:
                 minutes_to_sleep = 60
             else:
-                minutes_to_sleep = (65 - now.minute) % 60
+                minutes_to_sleep = (60 + HOURLY_OFFSET - now.minute) % 60
             print('sender_worker sleeping for {} minutes'.format(minutes_to_sleep))
             sys.stdout.flush()
             time.sleep(minutes_to_sleep * 60)
