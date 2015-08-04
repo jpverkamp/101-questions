@@ -1,7 +1,6 @@
 import datetime
 import lib
 import models
-import sys
 import threading
 import time
 
@@ -20,7 +19,6 @@ def register(app):
             else:
                 minutes_to_sleep = (60 + HOURLY_OFFSET - now.minute) % 60
             print('sender_worker sleeping for {} minutes'.format(minutes_to_sleep))
-            sys.stdout.flush()
             time.sleep(minutes_to_sleep * 60)
 
             # Scan through all current questionsets
@@ -28,4 +26,3 @@ def register(app):
                 for qs in user['questionsets']:
                     if qs.should_send_next():
                         qs.send_next()
-            sys.stdout.flush()

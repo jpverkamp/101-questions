@@ -13,8 +13,6 @@ if DEBUG_MODE: print('Running in DEBUG_MODE')
 RELOAD_MODE = ('--reload' in sys.argv) or ('101QS_RELOAD' in os.environ)
 if RELOAD_MODE: print('Running in RELOAD_MODE')
 
-sys.stdout.flush()
-
 # Use a terrible, consistent key for debug mode
 # In production mode, generate a new key on every deploy (will log everyone out)
 if DEBUG_MODE:
