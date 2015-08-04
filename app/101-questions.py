@@ -5,10 +5,17 @@ import os
 import signal
 import sys
 
+DEBUG_MODE = ('--debug' in sys.argv) or ('101QS_DEBUG' in os.environ)
+RELOAD_MODE = ('--reload' in sys.argv) or ('101QS_RELOAD' in os.environ)
+
 app = flask.Flask(__name__)
-app.debug = True
-#app.secret_key = os.urandom(24)
-app.secret_key = '\0' * 24 # DEBUG
+
+# Use a terrible, consistent key for debug mode
+# In production mode, generate a new key on every deploy (will log everyone out)
+if DEBUG_MODE:
+    app.secret_key = '\0' * 24
+else:
+    app.secret_key = os.urandom(24)
 
 import controllers
 controllers.register_all(app)
@@ -24,4 +31,9 @@ def sigterm_handler(signo, frame):
 signal.signal(signal.SIGTERM, sigterm_handler)
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port = 8001)
+    app.run(
+        host = '0.0.0.0',
+        port = 8001,
+        debug = DEBUG_MODE,
+        use_reloader = RELOAD_MODE,
+    )
