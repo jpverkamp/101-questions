@@ -5,3 +5,7 @@
     color: blue;
     cursor: pointer;
 }
+
+.current {
+    font-weight: bold;
+}
