@@ -29,19 +29,16 @@ class QuestionSet(lib.RedisDict):
 
         # If we've already sent all of the questions, we're done
         if self['current-question'] >= len(self['questions']):
-            print('Skip: DONE')
             return False
 
         # The current date is either today or already passed (on misses, send on the next day we catch it)
         now = datetime.datetime.now()
         ymd = now.strftime('%Y-%m-%d')
         if self['next-send-date'] > ymd:
-            print('Skip: TOMORROW')
             return False
 
         # The current hour has to equal the cron hour
         if self['cron-hour'] != now.hour:
-            print('Skip: WRONG HOUR')
             return False
 
         # All conditions pass, send it!
