@@ -1,8 +1,15 @@
 import bcrypt
-
+import hashlib
+import hmac
 import lib
 import models
 import utils
+import os
+import sys
+
+if not 'HMAC_KEY' in os.environ:
+    print('ENV missing: HMAC_KEY')
+    sys.exit(0)
 
 class User(lib.RedisDict):
     '''A user. Duh.'''
@@ -61,3 +68,42 @@ class User(lib.RedisDict):
         ).decode('utf-8')
 
         return hashedTestPassword == self['password']
+
+    def generateFriendship(self, target_email):
+        '''Generate a potential friendship link from this user to another.'''
+
+        params = 'src={me}&dst={them}'.format(me = self['email'], them = target_email)
+        signature = hmac.new(
+            os.environ['HMAC_KEY'].encode('utf-8'),
+            params.encode('utf-8'),
+            digestmod = hashlib.sha256
+        ).hexdigest()
+
+        return '/friendship/verify?{params}&sig={signature}'.format(params = params, signature = signature)
+
+    def verifyFriendship(self, params):
+        '''
+        Verify that we sent the previous friendship link.
+
+        If we did, create a friendship between the two users.
+        '''
+
+        if params['dst'] != self['email']:
+            raise Exception('Friendship link not sent to current user')
+
+        paramstring = 'src={src}&dst={dst}'.format(src = params['src'], dst = params['dst'])
+        signature = hmac.new(
+            os.environ['HMAC_KEY'].encode('utf-8'),
+            paramstring.encode('utf-8'),
+            digestmod = hashlib.sha256
+        ).hexdigest()
+
+        if signature != params['sig']:
+            raise Exception('Friendship signature not valid')
+
+        other = models.User(params['src'])
+
+        self['friends'].append(other)
+        other['friends'].append(self)
+
+        return True

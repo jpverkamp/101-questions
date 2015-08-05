@@ -11,6 +11,9 @@
         <input name="password" type="password" class="form-control" value="" />
     </div>
     <input type="submit" value="Login" />
+    {% if redirect is defined %}
+    <input type="hidden" name="redirect" value="{{ redirect }}" />
+    {% endif %}
 </form>
 
 <form id="register" method="post" action="{{ url_for('register') }}">
@@ -28,5 +31,8 @@
         <input name="password" type="password" class="form-control" value="" />
     </div>
     <input type="submit" value="Register" />
+    {% if redirect is defined %}
+    <input type="hidden" name="redirect" value="{{ redirect }}" />
+    {% endif %}
 </form>
 {% endblock %}

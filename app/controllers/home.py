@@ -22,7 +22,10 @@ def register(app):
         else:
             flask.flash('Incorrect username or password')
 
-        return flask.redirect('/')
+        if 'redirect' in flask.request.form and flask.request.form['redirect']:
+            return flask.redirect(flask.request.form['redirect'])
+        else:
+            return flask.redirect('/')
 
     @app.route('/logout', methods = ['GET', 'POST'])
     def logout():
@@ -45,4 +48,7 @@ def register(app):
 
         flask.flash('New user created')
 
-        return flask.redirect('/')
+        if 'redirect' in flask.request.form and flask.request.form['redirect']:
+            return flask.redirect(flask.request.form['redirect'])
+        else:
+            return flask.redirect('/')

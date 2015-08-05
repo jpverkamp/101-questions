@@ -17,4 +17,4 @@ def register(app):
             return flask.render_template('user.html', user = user)
         else:
             flask.flash('User doesn\'t exist')
-            return flask.render_template('/')
+            return flask.redirect('/')
