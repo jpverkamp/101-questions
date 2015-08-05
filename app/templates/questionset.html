@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block body %}
+<div>
+    <h3>Title</h2>
+    <div id="viewTitle">
+        <span class="item editable" data-title="title" data-url="/questionset/{{ questionset['id'] }}/title">
+            {{ questionset['title'] }}
+        </span>
+    </div>
+</div>
+
+<h3>Frequency</h2>
+<div id="viewFrequency">
+    <span class="item editable" data-title="frequency" data-url="/questionset/{{ questionset['id'] }}/frequency">
+        {{ questionset['frequency'] }}
+    </span>
+</div>
+
+<h3>Next Question</h2>
+<div id="viewNextQuestion">
+    Question
+    <span class="item editable" data-title="current-question" data-url="/questionset/{{ questionset['id'] }}/current-question">{{ questionset['current-question'] + 1 }}</span>
+    on
+    <span class="item editable" data-title="next-send-date" data-url="/questionset/{{ questionset['id'] }}/next-send-date">{{ questionset['next-send-date'] }}</span>
+</div>
+
+<h3>Question Hour (UTC)</h2>
+<div id="viewCronHour">
+    <select class="item selectable" name="cron-hour" data-url="/questionset/{{ questionset['id'] }}/cron-hour">
+        {% for i in range(24) %}
+        {% if i == questionset['cron-hour'] %}
+        <option value="{{ i }}" selected>{{ i }}</option>
+        {% else %}
+        <option value="{{ i }}">{{ i }}</option>
+        {% endif %}
+        {% endfor %}
+    </select>
+</div>
+
+<h3>Targets</h2>
+<div id="viewTargets">
+    <ol>
+        <li>
+            <input class="item toggleable" data-url="/questionset/{{ questionset['id'] }}/targets" type="checkbox" name="targets" value="{{ user['id'] }}" {% if user in questionset['targets'] %}checked{% endif %} />
+            {{ user['name'] }} ({{ user['email'] }})
+        </li>
+        {% for friend in user['friends'] %}
+        <li>
+            <input class="item toggleable" data-url="/questionset/{{ questionset['id'] }}/targets" type="checkbox" name="targets" value="{{ friend['id'] }}" {% if friend in questionset['targets'] %}checked{% endif %} />
+            {{ friend['name'] }} ({{ friend['email'] }})
+        </li>
+        {% endfor %}
+    </ol>
+</div>
+
+<div>
+    <h3>Questions</h2>
+    <div id="viewQuestions">
+        <ol>
+            {% for question in questionset['questions'] %}
+            <li>
+                <span class="item editable" data-field="Question" data-url="/questionset/{{ questionset['id'] }}/questions/{{ loop.index0 }}">{{ question }}</span>
+                <a class="as-delete" href="/questionset/{{ questionset['id'] }}/questions/{{ loop.index0 }}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+                {% if questionset['current-question'] == loop.index0 %}
+                <a class="as-post" href="/questionset/{{ questionset['id'] }}/questions/send-next"><span class="glyphicon glyphicon-send"></span></a>
+                {% endif %}
+            </li>
+            {% endfor %}
+            <li>
+                    [ <a class="as-post" href="/questionset/{{ questionset['id'] }}/questions">Add</a> ]
+                    [ <a href="/questionset/{{ questionset['id'] }}/questions/import">Import</a> ]
+            </li>
+        </ol>
+    </div>
+</div>
+{% endblock %}

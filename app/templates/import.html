@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block body %}
+<form id="import" method="post" action="{{ action }}">
+    <h3>Import {{ type }}:</h3>
+    <p>Enter one or more items, either one per line or as a JSON list of strings.</p>
+    <textarea class="form-control" rows="10" name="values"></textarea>
+    <input class="form-control" type="submit" value="Import" />
+    <input name="redirect" type="hidden" value="{{ redirect }}" />
+</form>
+{% endblock %}

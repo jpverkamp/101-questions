@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block body %}
+
+<h3>{{ user['name'] }} (<a href="mailto:{{ user['email'] }}">{{ user['email'] }}</a>)</h3>
+
+<h3>Friends</h3>
+<ul>
+    {% if user['friends'] %}
+    {% for friend in user['friends'] %}
+    <li><a href="{{ url_for('user', email = friend['email']) }}">{{ friend['name'] }}</a></li>
+    {% endfor %}
+    {% else %}
+    <li>No friends yet. Sorry!</li>
+    {% endif %}
+    {% if is_current_user is defined and is_current_user %}
+    <li>[ <a href="/friendship/request">Add friends</a> ]</li>
+    {% endif %}
+</ul>
+
+{% if is_current_user is defined and is_current_user %}
+<h3>Question Sets</h3>
+<ul>
+{% if user['questionsets'] %}
+    {% for questionset in user['questionsets'] %}
+    <li>
+        <a href="{{ url_for('get_questionset', id = questionset['id']) }}">{% if questionset['title'] %}{{ questionset['title'] }}{% else %}(untitled){% endif %}</a>
+        <a class="as-delete" href="{{ url_for('delete_questionset', id = questionset['id']) }}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+    </li>
+    {% endfor %}
+    <li>
+        [ <a class="as-post" href="{{ url_for('create_questionset') }}">Create a new questionset</a> ]
+    </li>
+    {% else %}
+    <li>
+        No question sets yet. Why don't you <a class="as-post" href="{{ url_for('create_questionset') }}">create one</a>?
+    </li>
+{% endif %}
+</ul>
+{% endif %}
+{% endblock %}

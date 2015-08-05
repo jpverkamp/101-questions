@@ -1,13 +1,17 @@
-web:
-    build: .
+app:
+    build: ./app
     links:
-    - redis
+        - redis
     ports:
-    - "10177:10177"
+        - 10177:8001
+    environment:
+        101QS_DEBUG: True
+        PYTHONUNBUFFERED: True
     env_file:
-    - "./env.conf"
+        - ./configs/email.env
+        - ./configs/hmac.env
 
 redis:
     image: redis
     volumes:
-    - data:/data
+        - data:/data

@@ -1,14 +1,19 @@
 import copy
 import smtplib
 import os
+import sys
 
 EMAIL_TEMPLATE = '''From: 101-questions@jverkamp.com
 Reply-To: {src}
 To: {dst}
 Subject: {subject}
 Content-Type: text/plain; charset=utf-8; format=flowed
-
 {body}'''
+
+missing_env_vars = [var for var in ['EMAIL_HOST', 'EMAIL_PORT', 'EMAIL_USER', 'EMAIL_PASS'] if not var in os.environ]
+if missing_env_vars:
+    print('Missing from ENV: {}'.format(missing_env_vars))
+    sys.exit(0)
 
 class Mailer(object):
     instance = None
@@ -24,7 +29,7 @@ class Mailer(object):
     def __del__(self):
         self.smtp.close()
 
-def send(emails, subject, body, second_chance = False):
+def email(emails, subject, body, second_chance = False):
 
     if Mailer.instance == None:
         Mailer.instance = Mailer()
@@ -61,4 +66,4 @@ def send(emails, subject, body, second_chance = False):
             # Most likely failure is that the SMTP connection timed out
             # Try to rebuild it and resend, only try one extra time though
             Mailer.instance = Mailer()
-            send(emails, subject, body, True)
+            email(emails, subject, body, True)
