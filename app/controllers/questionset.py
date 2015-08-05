@@ -23,6 +23,24 @@ def register(app):
 
         return get_questionset(qs.id)
 
+    @app.route('/questionset/<id>', methods = ['DELETE'])
+    @lib.authenticated
+    def delete_questionset(id):
+
+        user = lib.current_user()
+        qs = models.QuestionSet(id)
+
+        for index, each_qs in enumerate(user['questionsets']):
+            print('Trying {} vs {}'.format(qs, each_qs))
+            if qs == each_qs:
+                print('GOT IT!')
+                del user['questionsets'][index]
+                break
+
+        qs.delete()
+
+        return json.dumps(True)
+
     @app.route('/questionset/<id>/<field>', methods = ['POST'])
     @lib.authenticated
     def update_questionset(id, field):

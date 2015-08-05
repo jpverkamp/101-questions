@@ -22,7 +22,10 @@
 <ul>
 {% if user['questionsets'] %}
     {% for questionset in user['questionsets'] %}
-    <li><a href="{{ url_for('get_questionset', id = questionset['id']) }}">{% if questionset['title'] %}{{ questionset['title'] }}{% else %}(untitled){% endif %}</a></li>
+    <li>
+        <a href="{{ url_for('get_questionset', id = questionset['id']) }}">{% if questionset['title'] %}{{ questionset['title'] }}{% else %}(untitled){% endif %}</a>
+        <a class="as-delete" href="{{ url_for('delete_questionset', id = questionset['id']) }}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a>
+    </li>
     {% endfor %}
     <li>
         [ <a class="as-post" href="{{ url_for('create_questionset') }}">Create a new questionset</a> ]
