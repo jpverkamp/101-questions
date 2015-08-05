@@ -50,8 +50,17 @@ class QuestionSet(lib.RedisDict):
     def send_next(self):
         '''Send the next question. Use should_send_next to check unless you want to force it.'''
 
-        # TODO: Implement this
         print('Sending question {} from {}'.format(self['current-question'], self))
+
+        emails = [target['email'] for target in self['targets']]
+        subject = '{title} Day {index} of {count}'.format(
+            title = self['title'],
+            index = self['current-question'] + 1,
+            count = len(self['questions'])
+        )
+        body = self['questions'][self['current-question']]
+
+        lib.email(emails = emails, subject = subject, body = body)
 
         # Question sent successfully, increment to the next question
         # TODO: Add more options for this

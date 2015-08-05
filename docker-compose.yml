@@ -7,6 +7,8 @@ app:
     environment:
         101QS_DEBUG: True
         PYTHONUNBUFFERED: True
+    env_file:
+        ./configs/email.env
 
 redis:
     image: redis
