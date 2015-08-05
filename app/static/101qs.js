@@ -4,8 +4,9 @@ $(function() {
         return function(evt) {
             evt.preventDefault();
 
-            console.log(evt);
-            console.log(method + ' ' + evt.currentTarget.href);
+            if (method == 'delete' && !confirm('Are you sure you wish to delete this item?')) {
+                return;
+            }
 
             $.ajax({ type: method, url: evt.currentTarget.href, success: function() { location.reload() } });
         };
