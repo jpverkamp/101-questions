@@ -13,8 +13,10 @@ def register(app):
             email = flask.session['email']
 
         user = models.User(email)
+        is_current_user = (user == lib.current_user())
+
         if user:
-            return flask.render_template('user.html', user = user)
+            return flask.render_template('user.html', user = user, is_current_user = is_current_user)
         else:
             flask.flash('User doesn\'t exist')
             return flask.redirect('/')

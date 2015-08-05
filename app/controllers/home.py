@@ -7,7 +7,7 @@ def register(app):
     def home():
         if 'email' in flask.session:
             current_user = models.User(flask.session['email'])
-            return flask.render_template('user.html', user = current_user)
+            return flask.render_template('user.html', user = current_user, is_current_user = True)
         else:
             return flask.render_template('login.html')
 
