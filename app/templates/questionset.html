@@ -18,9 +18,10 @@
 
 <h3>Next Question</h2>
 <div id="viewNextQuestion">
-    <span class="item editable" data-title="next-send-date" data-url="/questionset/{{ questionset['id'] }}/next-send-date">
-        {{ questionset['next-send-date'] }}
-    </span>
+    Question
+    <span class="item editable" data-title="current-question" data-url="/questionset/{{ questionset['id'] }}/current-question">{{ questionset['current-question'] + 1 }}</span>
+    on
+    <span class="item editable" data-title="next-send-date" data-url="/questionset/{{ questionset['id'] }}/next-send-date">{{ questionset['next-send-date'] }}</span>
 </div>
 
 <h3>Question Hour (UTC)</h2>

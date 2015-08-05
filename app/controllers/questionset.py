@@ -46,7 +46,12 @@ def register(app):
     def update_questionset(id, field):
 
         qs = models.QuestionSet(id)
-        qs[field] = flask.request.form['value']
+
+        if field == 'current-question': # Questions are zero indexed internally
+            qs[field] = int(flask.request.form['value']) - 1
+        else:
+            qs[field] = flask.request.form['value']
+
         return json.dumps(True)
 
     @app.route('/questionset/<id>/questions', methods = ['POST'])
