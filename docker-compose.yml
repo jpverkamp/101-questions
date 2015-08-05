@@ -3,7 +3,7 @@ app:
     links:
         - redis
     ports:
-        - 80:8001
+        - 10177:8001
     environment:
         101QS_DEBUG: True
         PYTHONUNBUFFERED: True
