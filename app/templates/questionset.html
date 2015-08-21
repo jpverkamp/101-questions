@@ -24,6 +24,12 @@
     <span class="item editable" data-title="next-send-date" data-url="/questionset/{{ questionset['id'] }}/next-send-date">{{ questionset['next-send-date'] }}</span>
 </div>
 
+<h3>Options</h2>
+<div id="viewOptions">
+    <p><input class="item toggleable" data-url="/questionset/{{ questionset['id'] }}/toggle/restart" name="mode-restart" type="checkbox" {% if questionset['mode-restart'] %}checked{% endif %} />Restart when finished</p>
+    <p><input class="item toggleable" data-url="/questionset/{{ questionset['id'] }}/toggle/shuffle" name="mode-shuffle" type="checkbox" {% if questionset['mode-shuffle'] %}checked{% endif %} />Shuffle on restart</p>
+</div>
+
 <h3>Question Hour (UTC)</h2>
 <div id="viewCronHour">
     <select class="item selectable" name="cron-hour" data-url="/questionset/{{ questionset['id'] }}/cron-hour">

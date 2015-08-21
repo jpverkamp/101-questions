@@ -1,6 +1,7 @@
 import datetime
 import lib
 import models
+import random
 import sys
 
 class QuestionSet(lib.RedisDict):
@@ -20,6 +21,8 @@ class QuestionSet(lib.RedisDict):
                 'current-question': int,
                 'cron-hour': int,
                 'questions': lib.RedisList.as_child(self, 'questions', str),
+                'mode-restart': bool,
+                'mode-shuffle': bool
             },
             defaults = defaults
         )
@@ -63,6 +66,23 @@ class QuestionSet(lib.RedisDict):
         # TODO: Add more options for this
 
         self['current-question'] += 1
+
+        # If we're past the end, check mode status
+        # restart: Start over at the beginning
+        # shuffle: If we start over, also randomize the questions
+        if self['current-question'] >= len(self['questions']) and self['mode-restart']:
+            self['current-question'] = 0
+
+            # TODO: Figure out a more efficient way to do this
+            if self['mode-shuffle']:
+                questions = list(self['questions'])
+                random.shuffle(questions)
+
+                while self['questions']:
+                    self['questions'].lpop()
+
+                for question in questions:
+                    self['questions'].append(question)
 
         now = datetime.datetime.now()
         today = datetime.date(now.year, now.month, now.day)
