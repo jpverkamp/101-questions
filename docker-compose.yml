@@ -14,4 +14,4 @@ app:
 redis:
     image: redis
     volumes:
-        - data:/data
+        - ./data:/data
