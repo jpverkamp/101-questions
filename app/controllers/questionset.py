@@ -80,6 +80,17 @@ def register(app):
 
         return json.dumps(True)
 
+    @app.route('/questionset/<id>/toggle/<mode>', methods = ['POST'])
+    @lib.authenticated
+    def update_questionset_modes(id, mode):
+
+        questionset = models.QuestionSet(id)
+
+        state = flask.request.form['state']
+        questionset['mode-{}'.format(mode)] = json.loads(state)
+
+        return json.dumps(True)
+
     @app.route('/questionset/<id>/cron-hour', methods = ['POST'])
     @lib.authenticated
     def update_questionset_cron_hour(id):
