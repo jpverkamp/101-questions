@@ -31,9 +31,7 @@ def register(app):
         qs = models.QuestionSet(id)
 
         for index, each_qs in enumerate(user['questionsets']):
-            print('Trying {} vs {}'.format(qs, each_qs))
             if qs == each_qs:
-                print('GOT IT!')
                 del user['questionsets'][index]
                 break
 
@@ -113,6 +111,11 @@ def register(app):
 
         qs = models.QuestionSet(id)
         del qs['questions'][index]
+
+        # If the question deleted was before the current index, don't skip a question
+        if index < qs['current-question']:
+            qs['current-question'] -= 1
+
         return json.dumps(True)
 
     @app.route('/questionset/<id>/questions/send-next', methods = ['POST'])
