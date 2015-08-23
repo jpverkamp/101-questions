@@ -49,6 +49,11 @@ def register(app):
 
         if field == 'current-question': # Questions are zero indexed internally
             qs[field] = int(flask.request.form['value']) - 1
+        elif field == 'frequency': # Validate frequencies
+            try:
+                qs[field] = lib.Frequency(flask.request.form['value'])
+            except:
+                return 'Invalid frequency. Options:\n' + lib.Frequency.options_string(), 400
         else:
             qs[field] = flask.request.form['value']
 

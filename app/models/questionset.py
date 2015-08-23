@@ -15,7 +15,7 @@ class QuestionSet(lib.RedisDict):
             id = id,
             fields = {
                 'title': str,
-                'frequency': str,
+                'frequency': lib.Frequency,
                 'targets': lib.RedisList.as_child(self, 'targets', models.User),
                 'next-send-date': str,
                 'current-question': int,
@@ -87,16 +87,8 @@ class QuestionSet(lib.RedisDict):
         now = datetime.datetime.now()
         today = datetime.date(now.year, now.month, now.day)
 
-        frequency = self['frequency'].lower()
-
-        if frequency == 'daily':
-            next_day = today + datetime.timedelta(days = 1)
-        elif frequency == 'weekly':
-            next_day = today + datetime.timedelta(weeks = 1)
-        else:
-            print('Uknown frequency type "{}", defaulting to daily'.format(frequency))
-            next_day = today + datetime.timedelta(days = 1)
-
+        # Advance the question
+        next_day = self['frequency'].next(today)
         self['next-send-date'] = next_day.strftime('%Y-%m-%d')
 
         return True
