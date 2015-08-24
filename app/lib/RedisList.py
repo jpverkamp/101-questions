@@ -40,12 +40,9 @@ class RedisList(RedisObject):
         '''
 
         if isinstance(index, slice):
-            if slice.step != 1:
-                raise NotImplemented('Cannot specify a step to a RedisObject slice')
-
             return [
                 RedisObject.decode_value(self.item_type, el)
-                for el in self.redis.lrange(self.id, slice.start, slice.end)
+                for el in self.redis.lrange(self.id, index.start, index.stop)
             ]
         else:
             return RedisObject.decode_value(self.item_type, self.redis.lindex(self.id, index))
@@ -95,5 +92,5 @@ class RedisList(RedisObject):
 
         self.redis.rpush(self.id, RedisObject.encode_value(val))
 
-    def append(self, val):        
+    def append(self, val):
         self.rpush(val)

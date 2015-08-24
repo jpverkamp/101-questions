@@ -1,17 +1,29 @@
 import json
 import lib
+import math
 import models
 import flask
 
 def register(app):
 
-    @app.route('/questionset/<id>')
+    @app.route('/questionset/<id>', defaults = {'page' : None})
+    @app.route('/questionset/<id>/<int:page>')
     @lib.authenticated
-    def get_questionset(id):
+    def get_questionset(id, page = None):
 
         user = lib.current_user()
         qs = models.QuestionSet(id)
-        return flask.render_template('questionset.html', user = user, questionset = qs)
+
+        if page is None:
+            page = math.floor(qs['current-question'] / 10) + 1
+
+        return flask.render_template(
+            'questionset.html',
+            user = user,
+            questionset = qs,
+            current_page = page,
+            total_pages = math.ceil(len(qs['questions']) / 10)
+        )
 
     @app.route('/questionset', methods = ['POST'])
     @lib.authenticated
