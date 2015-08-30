@@ -73,16 +73,30 @@
             </li>
             {% endfor %}
         </ol>
-        {% if total_pages > 1 %}
-        <div>
-            Pages:
-            {% for i in range(1, total_pages + 1) %}
-            {% if i == current_page %}
-            [ <strong>{{ i }}</strong> ]
-            {% else %}
-            [ <a href="/questionset/{{ questionset['id'] }}/{{ i }}">{{ i }}</a> ]
-            {% endif %}
-            {% endfor %}
+        {% if pages %}
+        <div id="page-list">
+            <div id="page-list-all" style="display:none;">
+                Pages:
+                {% for page in range(1, total_pages + 1) %}
+                {% if page == current_page %}
+                <strong>{{ page }}</strong>
+                {% else %}
+                <a href="/questionset/{{ questionset['id'] }}/{{ page }}">{{ page }}</a>
+                {% endif %}
+                {% endfor %}
+            </div>
+            <div id="page-list-short">
+                Pages:
+                {% for page in pages %}
+                {% if page == '...' %}
+                <a id="page-list-toggle" href="#">...</a>
+                {% elif page == current_page %}
+                <strong>{{ page }}</strong>
+                {% else %}
+                <a href="/questionset/{{ questionset['id'] }}/{{ page }}">{{ page }}</a>
+                {% endif %}
+                {% endfor %}
+            </div>
         </div>
         {% endif %}
         <div>

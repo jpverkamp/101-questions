@@ -17,12 +17,34 @@ def register(app):
         if page is None:
             page = math.floor(qs['current-question'] / 10) + 1
 
+        total_pages = max(1, math.ceil(len(qs['questions']) / 10))
+
+        # Not enough pages for pagination
+        if total_pages == 1:
+            pages = False
+        # Otherwise generate a list with the first, last, and a range around the current
+        else:
+            pages = [1]
+
+            if page > 4:
+                pages += ['...']
+
+            for i in range(page - 2, page + 3):
+                if i > 1 and i < total_pages - 1:
+                    pages += [i]
+
+            if page < total_pages - 4:
+                pages += ['...']
+
+            pages += [total_pages]
+
         return flask.render_template(
             'questionset.html',
             user = user,
             questionset = qs,
+            pages = pages,
             current_page = page,
-            total_pages = math.ceil(len(qs['questions']) / 10)
+            total_pages = total_pages,
         )
 
     @app.route('/questionset', methods = ['POST'])

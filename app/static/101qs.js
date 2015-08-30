@@ -61,4 +61,11 @@ $(function() {
             });
         });
     });
+
+    $('#page-list-toggle').click(function() {
+        console.log('hello');
+        $('#page-list-short').hide();
+        $('#page-list-all').show();
+        return false;
+    });
 });
