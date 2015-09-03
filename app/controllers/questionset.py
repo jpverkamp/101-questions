@@ -30,10 +30,10 @@ def register(app):
                 pages += ['...']
 
             for i in range(page - 2, page + 3):
-                if i > 1 and i < total_pages - 1:
+                if i > 1 and i < total_pages:
                     pages += [i]
 
-            if page < total_pages - 4:
+            if page < total_pages - 3:
                 pages += ['...']
 
             pages += [total_pages]
