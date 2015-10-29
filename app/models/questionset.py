@@ -21,8 +21,8 @@ class QuestionSet(lib.RedisDict):
                 'current-question': int,
                 'cron-hour': int,
                 'questions': lib.RedisList.as_child(self, 'questions', str),
-                'mode-restart': bool,
-                'mode-shuffle': bool
+                'mode-restart': lambda x : x == 'True', # Note: bool does not work; bool('False') == True
+                'mode-shuffle': lambda x : x == 'True',
             },
             defaults = defaults
         )
