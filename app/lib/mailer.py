@@ -53,7 +53,7 @@ def email(emails, subject, body, second_chance = False):
                 dst = dst,
                 subject = subject,
                 body = body
-            )
+            ).encode('utf-8')
             print('Mailing {subject} to {dst}'.format(subject = subject, dst = dst))
 
             Mailer.instance.smtp.sendmail(os.environ['EMAIL_USER'], dst, msg)
