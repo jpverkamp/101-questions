@@ -63,7 +63,10 @@ class RedisObject(object):
         '''Decode a value if it is non-None, otherwise, decode with no arguments.'''
 
         if value == None:
-            return type()
+            try:
+                return type()
+            except:
+                return type(None)
         else:
             return type(value)
 
