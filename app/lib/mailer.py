@@ -2,6 +2,10 @@ import copy
 import smtplib
 import os
 import sys
+import time
+
+MAXIMUM_RETRIES = 3
+RETRY_DELAY = 60 * 5
 
 EMAIL_TEMPLATE = '''From: 101-questions@jverkamp.com
 Reply-To: {src}
@@ -29,7 +33,7 @@ class Mailer(object):
     def __del__(self):
         self.smtp.close()
 
-def email(emails, subject, body, second_chance = False):
+def email(emails, subject, body, retries = 0):
 
     if Mailer.instance == None:
         Mailer.instance = Mailer()
@@ -60,10 +64,14 @@ def email(emails, subject, body, second_chance = False):
 
     except Exception as ex:
 
-        print('Failure in mailer: {0}'.format(ex))
+        print('Failure in mailer on retry {1}: {0}'.format(ex, retries))
 
-        if not second_chance:
+        if retries < MAXIMUM_RETRIES:
+            print('Waiting {} seconds before retrying'.format(RETRY_DELAY))
+            time.sleep(RETRY_DELAY)
+
             # Most likely failure is that the SMTP connection timed out
             # Try to rebuild it and resend, only try one extra time though
             Mailer.instance = Mailer()
-            email(emails, subject, body, True)
+            email(emails, subject, body, retries + 1)
+
