@@ -11,6 +11,7 @@ app:
     env_file:
         - ./configs/email.env
         - ./configs/hmac.env
+        - ./configs/mailgun.env
 
 redis:
     image: redis
