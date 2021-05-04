@@ -16,6 +16,7 @@ class QuestionSet(lib.RedisDict):
             fields = {
                 'title': str,
                 'frequency': lib.Frequency,
+                'send-count': int,
                 'targets': lib.RedisList.as_child(self, 'targets', models.User),
                 'next-send-date': str,
                 'current-question': int,
@@ -49,6 +50,11 @@ class QuestionSet(lib.RedisDict):
 
     def send_next(self):
         '''Send the next question. Use should_send_next to check unless you want to force it.'''
+
+        # If we've already sent all of the questions, we're done
+        # TODO: This is here because of multiples, fix it eventually
+        if self['current-question'] >= len(self['questions']):
+            return False
 
         print('Sending question {} from {}'.format(self['current-question'], self))
 
