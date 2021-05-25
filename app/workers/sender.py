@@ -25,5 +25,7 @@ def register(app):
             for user in models.User.all():
                 for qs in user['questionsets']:
                     if qs.should_send_next():
-                        for i in range(max(1, qs['send-count'])):
+                        send_count = max(1, qs['send-count'])
+                        for i in range(send_count):
                             qs.send_next()
+                            time.sleep(5)
