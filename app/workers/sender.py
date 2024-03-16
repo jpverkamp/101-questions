@@ -6,6 +6,7 @@ import time
 
 HOURLY_OFFSET = 5
 
+
 def register(app):
 
     @lib.daemonize
@@ -18,14 +19,14 @@ def register(app):
                 minutes_to_sleep = 60
             else:
                 minutes_to_sleep = (60 + HOURLY_OFFSET - now.minute) % 60
-            print('sender_worker sleeping for {} minutes'.format(minutes_to_sleep))
+            print("sender_worker sleeping for {} minutes".format(minutes_to_sleep))
             time.sleep(minutes_to_sleep * 60)
 
             # Scan through all current questionsets
             for user in models.User.all():
-                for qs in user['questionsets']:
+                for qs in user["questionsets"]:
                     if qs.should_send_next():
-                        send_count = max(1, qs['send-count'])
+                        send_count = max(1, qs["send-count"])
                         for i in range(send_count):
                             qs.send_next()
                             time.sleep(5)

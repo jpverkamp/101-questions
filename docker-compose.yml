@@ -5,8 +5,8 @@ app:
     ports:
         - 10177:8001
     environment:
-        # 101QS_DEBUG: ENABLED
-        # 101QS_RELOAD: ENABLED
+        101QS_DEBUG: ENABLED
+        101QS_RELOAD: ENABLED
         PYTHONUNBUFFERED: ENABLED
     env_file:
         - ./configs/email.env
