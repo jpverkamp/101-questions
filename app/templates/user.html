@@ -5,7 +5,7 @@
 
 <h3>Friends</h3>
 <ul>
-    {% if len(user['friends']) > 0 %}
+    {% if user['friends']|length > 0 %}
     {% for friend in user['friends'] %}
     <li><a href="{{ url_for('user', email = friend['email']) }}">{{ friend['name'] }}</a></li>
     {% endfor %}
@@ -20,7 +20,7 @@
 {% if is_current_user is defined and is_current_user %}
 <h3>Question Sets</h3>
 <ul>
-{% if user['questionsets'] %}
+{% if user['questionsets']|length > 0 %}
     {% for questionset in user['questionsets'] %}
     <li>
         <a href="{{ url_for('get_questionset', id = questionset['id']) }}">{% if questionset['title'] %}{{ questionset['title'] }}{% else %}(untitled){% endif %}</a>
